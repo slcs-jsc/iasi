@@ -12,7 +12,7 @@ int main(
 
   static double mu, sigma;
 
-  static int ichan, ix, iy;
+  static int ichan, itrack, ix, iy;
 
   /* Check arguments... */
   if (argc < 4)
@@ -32,23 +32,42 @@ int main(
 
   /* Write header... */
   fprintf(out,
-	  "# $1 = wavenumber [1/cm]\n" "# $2 = NESR [W/(m^2 sr cm^-1)]\n\n");
+	  "# $1 = track index\n"
+	  "# $2 = channel index\n"
+	  "# $3 = wavenumber [1/cm]\n"
+	  "# $4 = mean BT [K]\n" "# $5 = NEDT [K]\n");
 
-  /* Loop over channels... */
-  for (ichan = 0; ichan < IASI_L1_NCHAN; ichan++) {
+  /* Analyze blocks of data... */
+  for (itrack = 0; itrack < iasi_rad->ntrack; itrack += 60) {
 
-    /* Set wave struct... */
-    wave.nx = L1_NXTRACK;
-    wave.ny = iasi_rad->ntrack;
-    for (ix = 0; ix < wave.nx; ix++)
-      for (iy = 0; iy < wave.ny; iy++)
-	wave.temp[ix][iy] = iasi_rad->Rad[iy][ix][ichan];
+    /* Write empty line... */
+    fprintf(out, "\n");
 
-    /* Get noise... */
-    noise(&wave, &mu, &sigma);
+    /* Loop over channels... */
+    for (ichan = 0; ichan < IASI_L1_NCHAN; ichan++) {
 
-    /* Write output... */
-    fprintf(out, "%.4f %g\n", iasi_rad->freq[ichan], sigma);
+      /* Set wave struct... */
+      wave.nx = L1_NXTRACK;
+      wave.ny = 0;
+      for (iy = itrack; iy < GSL_MIN(itrack + 60, iasi_rad->ntrack); iy++) {
+	for (ix = 0; ix < wave.nx; ix++)
+	  wave.temp[ix][wave.ny] = brightness(iasi_rad->Rad[iy][ix][ichan],
+					      iasi_rad->freq[ichan]);
+	wave.ny++;
+      }
+
+      /* Check number of data points... */
+      if (wave.ny >= 55) {
+
+	/* Get noise... */
+	noise(&wave, &mu, &sigma);
+
+	/* Write output... */
+	if (gsl_finite(sigma))
+	  fprintf(out, "%d %d %.4f %g %g\n", itrack, ichan,
+		  iasi_rad->freq[ichan], mu, sigma);
+      }
+    }
   }
 
   /* Close file... */
