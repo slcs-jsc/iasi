@@ -10,7 +10,7 @@ int main(
 
   static FILE *out;
 
-  static double mu, sigma;
+  static double mu, nesr, sigma;
 
   static int ichan, itrack, ix, iy;
 
@@ -35,8 +35,10 @@ int main(
 	  "# $1 = track index\n"
 	  "# $2 = channel index\n"
 	  "# $3 = wavenumber [1/cm]\n"
-	  "# $4 = mean BT [K]\n" "# $5 = NEDT [K]\n");
-
+	  "# $4 = mean BT [K]\n"
+	  "# $5 = NEDT [K]\n"
+	  "# $6 = NESR [W/(m^2 sr cm^-1)]\n");
+  
   /* Analyze blocks of data... */
   for (itrack = 0; itrack < iasi_rad->ntrack; itrack += 60) {
 
@@ -62,10 +64,14 @@ int main(
 	/* Get noise... */
 	noise(&wave, &mu, &sigma);
 
+	/* Get NESR... */
+	nesr=planck(mu+sigma, iasi_rad->freq[ichan])
+	  -planck(mu, iasi_rad->freq[ichan]);
+	
 	/* Write output... */
 	if (gsl_finite(sigma))
-	  fprintf(out, "%d %d %.4f %g %g\n", itrack, ichan,
-		  iasi_rad->freq[ichan], mu, sigma);
+	  fprintf(out, "%d %d %.4f %g %g %g\n", itrack, ichan,
+		  iasi_rad->freq[ichan], mu, sigma, nesr);
       }
     }
   }
