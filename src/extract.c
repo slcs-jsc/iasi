@@ -464,9 +464,9 @@ void intpol_met_space(
     lon += 360;
 
   /* Get indices... */
-  ip = locate(met->p, met->np, p);
-  ix = locate(met->lon, met->nx, lon);
-  iy = locate(met->lat, met->ny, lat);
+  ip = locate_irr(met->p, met->np, p);
+  ix = locate_reg(met->lon, met->nx, lon);
+  iy = locate_reg(met->lat, met->ny, lat);
 
   /* Get weights... */
   wp = (met->p[ip + 1] - p) / (met->p[ip + 1] - met->p[ip]);
@@ -815,8 +815,8 @@ void read_met_geopot(
       else if (lon > topo_lon[topo_nx - 1])
 	lon -= 360;
       lat = met->lat[iy];
-      tx = locate(topo_lon, topo_nx, lon);
-      ty = locate(topo_lat, topo_ny, lat);
+      tx = locate_reg(topo_lon, topo_nx, lon);
+      ty = locate_reg(topo_lat, topo_ny, lat);
       z0 = LIN(topo_lon[tx], topo_z[tx][ty],
 	       topo_lon[tx + 1], topo_z[tx + 1][ty], lon);
       z1 = LIN(topo_lon[tx], topo_z[tx][ty + 1],
@@ -824,7 +824,7 @@ void read_met_geopot(
       z0 = LIN(topo_lat[ty], z0, topo_lat[ty + 1], z1, lat);
 
       /* Find surface pressure level... */
-      ip0 = locate(met->p, met->np, met->ps[ix][iy]);
+      ip0 = locate_irr(met->p, met->np, met->ps[ix][iy]);
 
       /* Get surface temperature... */
       ts = LIN(met->p[ip0], met->t[ix][iy][ip0],
