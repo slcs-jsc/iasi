@@ -8,9 +8,9 @@ This documentation describes the installation on a Linux system.
 A number of standard tools such as the GNU Compiler Collection (gcc)
 and 'make' are required for installation.
 
-Start by downloading the source code from the github repository:
+Start by downloading the source code from the git repository:
 
-    git clone https://github.com/slcs-jsc/iasi
+    git clone https://jugit.fz-juelich.de/slcs/iasi
 
 Change to the directory iasi/ which holds source codes,
 libraries, documentation, etc:
