@@ -5,37 +5,60 @@
 # Executables...
 EXC = bands extract noise perturbation spec2tab
 
+# Installation directory...
+DESTDIR ?= ../bin
+
 # Library directories...
-LIBDIR = -L ../lib/build/lib
+LIBDIR += -L ../lib/build/lib
 
 # Include directories...
-INCDIR = -I ../lib/build/include
+INCDIR += -I ../lib/build/include
 
-# Profiling...
-#PROF = 1
+# Static compilation...
+STATIC ?= 1
+
+# Optimization flags...
+OPT ?= -O3
+
+# Optimization information...
+INFO ?= 0
+
+# Compile for profiling...
+PROF ?= 0
 
 # -----------------------------------------------------------------------------
 # Set flags for GNU compiler...
 # -----------------------------------------------------------------------------
 
+# Get git version...
+VERSION ?= $(shell git describe --abbrev=4 --dirty --always --tags)
+
 # Compiler...
-CC = gcc
-MPICC = mpicc
+CC ?= gcc
+MPICC ?= mpicc
 
 # CFLAGS...
-CFLAGS = $(INCDIR) -DHAVE_INLINE -DGSL_DISABLE_DEPRACTED $(DEFS) -pedantic -Werror -Wall -W -Wmissing-prototypes -Wstrict-prototypes -Wconversion -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wnested-externs -Wno-long-long -Wmissing-declarations -Wredundant-decls -Winline -fno-common -fshort-enums -fopenmp -g
+CFLAGS ?= $(INCDIR) $(DEFINES) -DVERSION=\"$(VERSION)\" -DHAVE_INLINE -DGSL_DISABLE_DEPRACTED -pedantic -Werror -Wall -W -Wmissing-prototypes -Wstrict-prototypes -Wconversion -Wshadow -Wpointer-arith -Wcast-qual -Wcast-align -Wnested-externs -Wno-long-long -Wmissing-declarations -Wredundant-decls -Winline -fno-common -fshort-enums $(OPT) -g -fopenmp
 
 # LDFLAGS...
-LDFLAGS = $(LIBDIR) -lgsl -lgslcblas -lm -lnetcdf -lcoda -lm
+LDFLAGS ?= $(LIBDIR) -lgsl -lgslcblas -lm -lnetcdf -lcoda -lm
 
 # LDFLAGS for retrieval...
-LDFLAGS_RET = $(LIBDIR) -lgsl -lgslcblas -lm -lnetcdf -lm
+LDFLAGS_RET ?= $(LIBDIR) -lgsl -lgslcblas -lm -lnetcdf -lm
 
-# Profiling...
-ifdef PROF
-  CFLAGS += -O2 -pg 
-else
-  CFLAGS += -O3
+# Optimization information...
+ifeq ($(INFO),1)
+  CFLAGS += -fopt-info
+endif
+
+# Compile for profiling...
+ifeq ($(PROF),1)
+  CFLAGS += -pg
+endif
+
+# Static compilation...
+ifeq ($(STATIC),1)
+  CFLAGS += -static
 endif
 
 # -----------------------------------------------------------------------------

@@ -65,16 +65,18 @@
    ------------------------------------------------------------ */
 
 /*! Execute CODA library command and check result. */
-#define CODA(cmd) {                              \
-    if((cmd)!=0)                                 \
-      ERRMSG(coda_errno_to_string(coda_errno));  \
+#define CODA(cmd) {					\
+    int coda_result=(cmd);				\
+    if(coda_result!=0)					\
+      ERRMSG("%s", coda_errno_to_string(coda_errno));	\
   }
 
 /*! Execute netCDF library command and check result. */
-#define NC(cmd) {                                    \
-    if((cmd)!=NC_NOERR)                              \
-      ERRMSG(nc_strerror(cmd));                      \
-  }
+#define NC(cmd) {				     \
+  int nc_result=(cmd);				     \
+  if(nc_result!=NC_NOERR)			     \
+    ERRMSG("%s", nc_strerror(nc_result));	     \
+}
 
 /* ------------------------------------------------------------
    Structs...

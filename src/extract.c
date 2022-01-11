@@ -1000,9 +1000,9 @@ void read_met_sample(
 	       iy2 <= GSL_MIN(iy + ctl2->met_sy - 1, met->ny - 1); iy2++)
 	    for (ip2 = GSL_MAX(ip - ctl2->met_sp + 1, 0);
 		 ip2 <= GSL_MIN(ip + ctl2->met_sp - 1, met->np - 1); ip2++) {
-	      w = (float) (1.0 - fabs(ix - ix2) / ctl2->met_sx)
-		* (float) (1.0 - fabs(iy - iy2) / ctl2->met_sy)
-		* (float) (1.0 - fabs(ip - ip2) / ctl2->met_sp);
+	      w = (1.0f - (float)abs(ix - ix2) /  (float)ctl2->met_sx)
+		* (1.0f - (float)abs(iy - iy2) /  (float)ctl2->met_sy)
+		* (1.0f - (float)abs(ip - ip2) /  (float)ctl2->met_sp);
 	      help->ps[ix][iy] += w * met->ps[ix3][iy2];
 	      help->pt[ix][iy] += w * met->pt[ix3][iy2];
 	      help->z[ix][iy][ip] += w * met->z[ix3][iy2][ip2];
