@@ -84,7 +84,7 @@ clean:
 	rm -f $(EXC) retrieval *.o *~
 
 cppcheck:
-	cd ../ && cppcheck --enable=all ./src
+	cppcheck --enable=all ./
 
 dist:
 	zip iasi_`date +"%y%m%d%H%M"`.zip Doxyfile Makefile *.c *.h
