@@ -83,8 +83,11 @@ retrieval: retrieval.c jurassic.o
 clean:
 	rm -f $(EXC) retrieval *.o *~
 
-cppcheck:
+check_cppcheck:
 	cppcheck --enable=all ./
+
+check_lizard:
+	lizard -s cyclomatic_complexity
 
 dist:
 	zip iasi_`date +"%y%m%d%H%M"`.zip Doxyfile Makefile *.c *.h
