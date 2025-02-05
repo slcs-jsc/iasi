@@ -102,7 +102,7 @@ int main(
 	    rad[ib] = GSL_NAN;
 
 	  /* Convert to brightness temperature... */
-	  rad[ib] = brightness(rad[ib], 0.5 * (numin[ib] + numax[ib]));
+	  rad[ib] = BRIGHT(rad[ib], 0.5 * (numin[ib] + numax[ib]));
 
 	  /* Write output... */
 	  fprintf(out, " %.3f", rad[ib]);

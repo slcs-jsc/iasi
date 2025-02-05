@@ -78,8 +78,8 @@ int main(
 	    iasi_rad->Longitude[track][xtrack],
 	    iasi_rad->Latitude[track][xtrack],
 	    iasi_rad->freq[ichan],
-	    brightness(iasi_rad->Rad[track][xtrack][ichan],
-		       iasi_rad->freq[ichan]),
+	    BRIGHT(iasi_rad->Rad[track][xtrack][ichan],
+		   iasi_rad->freq[ichan]),
 	    iasi_rad->Rad[track][xtrack][ichan]);
 
   /* Close file... */

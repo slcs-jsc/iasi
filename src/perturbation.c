@@ -147,8 +147,8 @@ int main(
     for (track = 0; track < iasi_rad->ntrack; track++)
       for (xtrack = 0; xtrack < L1_NXTRACK; xtrack++)
 	pert_4mu->dc[track0 + track][xtrack]
-	  = brightness(iasi_rad->Rad[track][xtrack][2345],
-		       iasi_rad->freq[2345]);
+	  = BRIGHT(iasi_rad->Rad[track][xtrack][2345],
+		   iasi_rad->freq[2345]);
 
     /* Get 4.3 micron brightness temperature... */
     for (track = 0; track < iasi_rad->ntrack; track++)
@@ -163,7 +163,7 @@ int main(
 	  }
 	if (n > 0.9 * N4)
 	  pert_4mu->bt[track0 + track][xtrack]
-	    = brightness(radmean / n, numean / n);
+	    = BRIGHT(radmean / n, numean / n);
 	else
 	  pert_4mu->bt[track0 + track][xtrack] = GSL_NAN;
       }
@@ -181,7 +181,7 @@ int main(
 	  }
 	if (n > 0.9 * N15_LOW)
 	  pert_15mu_low->bt[track0 + track][xtrack]
-	    = brightness(radmean / n, numean / n);
+	    = BRIGHT(radmean / n, numean / n);
 	else
 	  pert_15mu_low->bt[track0 + track][xtrack] = GSL_NAN;
       }
@@ -199,7 +199,7 @@ int main(
 	  }
 	if (n > 0.9 * N15_HIGH)
 	  pert_15mu_high->bt[track0 + track][xtrack]
-	    = brightness(radmean / n, numean / n);
+	    = BRIGHT(radmean / n, numean / n);
 	else
 	  pert_15mu_high->bt[track0 + track][xtrack] = GSL_NAN;
       }

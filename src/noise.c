@@ -53,8 +53,8 @@ int main(
       wave.ny = 0;
       for (iy = itrack; iy < GSL_MIN(itrack + 60, iasi_rad->ntrack); iy++) {
 	for (ix = 0; ix < wave.nx; ix++)
-	  wave.temp[ix][wave.ny] = brightness(iasi_rad->Rad[iy][ix][ichan],
-					      iasi_rad->freq[ichan]);
+	  wave.temp[ix][wave.ny] = BRIGHT(iasi_rad->Rad[iy][ix][ichan],
+					  iasi_rad->freq[ichan]);
 	wave.ny++;
       }
 
@@ -65,8 +65,8 @@ int main(
 	noise(&wave, &mu, &sigma);
 
 	/* Get NESR... */
-	nesr=planck(mu+sigma, iasi_rad->freq[ichan])
-	  -planck(mu, iasi_rad->freq[ichan]);
+	nesr=PLANCK(mu+sigma, iasi_rad->freq[ichan])
+	  -PLANCK(mu, iasi_rad->freq[ichan]);
 	
 	/* Write output... */
 	if (gsl_finite(sigma))
