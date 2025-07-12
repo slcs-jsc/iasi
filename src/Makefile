@@ -65,6 +65,8 @@ endif
 # Targets...
 # -----------------------------------------------------------------------------
 
+.PHONY : all check clean coverage cppcheck dist doxygen indent install lizard mkdocs strip uninstall
+
 all: $(EXC) retrieval
 	rm -f *~
 
@@ -83,20 +85,29 @@ retrieval: retrieval.c jurassic.o
 clean:
 	rm -f $(EXC) retrieval *.o *~
 
-check_cppcheck:
+cppcheck:
 	cppcheck --enable=all ./
-
-check_lizard:
-	lizard -s cyclomatic_complexity
 
 dist:
 	zip iasi_`date +"%y%m%d%H%M"`.zip Doxyfile Makefile *.c *.h
 
 doxygen:
-	mkdir -p ../docs && cd ../docs && doxygen && cd latex && make && mv refman.pdf ..
+	cd ../docs && doxygen
 
 indent:
 	indent -br -brf -brs -bfda -ce -cdw -lp -npcs -npsl *.c *.h
 
+install:
+	mkdir -p $(DESTDIR) && cp $(EXC) $(DESTDIR)
+
+lizard:
+	lizard -s cyclomatic_complexity
+
+mkdocs:
+	cd ../docs && mkdocs build
+
 strip:
 	strip $(EXC) retrieval
+
+uninstall:
+	cd $(DESTDIR) && rm $(EXC)
