@@ -1,0 +1,31 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+
+cff-version: 1.2.0
+title: IASI Code Collection
+message: >-
+  If you use this software, please cite it using the
+  metadata from this file.
+type: software
+authors:
+  - given-names: Lars
+    family-names: Hoffmann
+    email: l.hoffmann@fz-juelich.de
+    affiliation: Forschungszentrum Jülich
+    orcid: 'https://orcid.org/0000-0003-3773-4377'
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.15867855
+    description: Latest release on Zenodo.
+  - type: url
+    value: 'https://github.com/slcs-jsc/iasi'
+    description: Software repository on GitHub.
+abstract: >-
+  This repository provides a collection of codes for the analysis of
+  observations of Eumetsat's Infrared Atmospheric Sounding
+  Interferometer (IASI).
+keywords:
+  - atmospheric science
+  - remote sensing
+  - infrared sounding
+license: GPL-3.0
