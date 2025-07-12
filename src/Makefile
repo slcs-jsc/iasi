@@ -9,10 +9,10 @@ EXC = bands extract noise perturbation spec2tab
 DESTDIR ?= ../bin
 
 # Library directories...
-LIBDIR += -L ../lib/build/lib
+LIBDIR += -L ../libs/build/lib
 
 # Include directories...
-INCDIR += -I ../lib/build/include
+INCDIR += -I ../libs/build/include
 
 # Static compilation...
 STATIC ?= 1
@@ -92,8 +92,8 @@ check_lizard:
 dist:
 	zip iasi_`date +"%y%m%d%H%M"`.zip Doxyfile Makefile *.c *.h
 
-doc:
-	mkdir -p ../doc && doxygen && cd ../doc/latex && make && mv refman.pdf ..
+doxygen:
+	mkdir -p ../docs && cd ../docs && doxygen && cd latex && make && mv refman.pdf ..
 
 indent:
 	indent -br -brf -brs -bfda -ce -cdw -lp -npcs -npsl *.c *.h
