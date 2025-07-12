@@ -1,6 +1,22 @@
 # IASI Code Collection
 
-This repository provides a collection of codes for the analysis of observations of Eumetsat's Infrared Atmospheric Sounding Interferometer (IASI).
+This repository provides a collection of codes for the analysis of
+observations of Eumetsat's Infrared Atmospheric Sounding
+Interferometer (IASI).
+
+[![release (latest by date)](https://img.shields.io/github/v/release/slcs-jsc/iasi)](https://github.com/slcs-jsc/iasi/releases)
+[![commits since latest release (by SemVer)](https://img.shields.io/github/commits-since/slcs-jsc/iasi/latest)](https://github.com/slcs-jsc/iasi/commits/master)
+[![last commit](https://img.shields.io/github/last-commit/slcs-jsc/iasi.svg)](https://github.com/slcs-jsc/iasi/commits/master)
+[![top language](https://img.shields.io/github/languages/top/slcs-jsc/iasi.svg)](https://github.com/slcs-jsc/iasi/tree/master/src)
+[![code size](https://img.shields.io/github/languages/code-size/slcs-jsc/iasi.svg)](https://github.com/slcs-jsc/iasi/tree/master/src)
+[![repo size](https://img.shields.io/github/repo-size/slcs-jsc/iasi.svg)](https://github.com/slcs-jsc/iasi/tree/master/src)
+[![codacy](https://api.codacy.com/project/badge/Grade/a9de7b2239f843b884d2a4eb583726c9)](https://app.codacy.com/gh/slcs-jsc/iasi?utm_source=github.com&utm_medium=referral&utm_content=slcs-jsc/iasi&utm_campaign=Badge_Grade_Settings)
+[![codecov](https://codecov.io/gh/slcs-jsc/iasi/branch/master/graph/badge.svg?token=4X6IEHWUBJ)](https://codecov.io/gh/slcs-jsc/iasi)
+[![tests](https://img.shields.io/github/actions/workflow/status/slcs-jsc/iasi/tests.yml?branch=master&label=tests)](https://github.com/slcs-jsc/iasi/actions)
+[![docs](https://img.shields.io/github/actions/workflow/status/slcs-jsc/iasi/docs.yml?branch=master&label=docs)](https://slcs-jsc.github.io/iasi)
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/slcs-jsc/iasi)
+[![license](https://img.shields.io/github/license/slcs-jsc/iasi.svg)](https://github.com/slcs-jsc/iasi/blob/master/COPYING)
+[![doi](https://zenodo.org/badge/DOI/10.5281/zenodo.14710848.svg)](https://doi.org/10.5281/zenodo.14710848)
 
 ## Installation
 
