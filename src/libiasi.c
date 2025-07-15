@@ -1,3 +1,28 @@
+/*
+  This file is part of the IASI Code Collection.
+  
+  the IASI Code Collections is free software: you can redistribute it
+  and/or modify it under the terms of the GNU General Public License
+  as published by the Free Software Foundation, either version 3 of
+  the License, or (at your option) any later version.
+  
+  The IASI Code Collection is distributed in the hope that it will be
+  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  General Public License for more details.
+  
+  You should have received a copy of the GNU General Public License
+  along with the IASI Code Collection. If not, see
+  <http://www.gnu.org/licenses/>.
+  
+  Copyright (C) 2019-2025 Forschungszentrum Juelich GmbH
+*/
+
+/*! 
+  \file
+  IASI Code Collection library definitions.
+*/
+
 #include "libiasi.h"
 
 /*****************************************************************************/
@@ -87,7 +112,7 @@ void background_poly_help(
 /*****************************************************************************/
 
 void background_poly(
-  wave_t * wave,
+  wave_t *wave,
   int dim_x,
   int dim_y) {
 
@@ -151,7 +176,7 @@ void background_poly(
 
 void iasi_read(
   char *filename,
-  iasi_rad_t * iasi_rad) {
+  iasi_rad_t *iasi_rad) {
 
   const char *product_class;
 
@@ -369,7 +394,7 @@ void iasi_read(
 /*****************************************************************************/
 
 void noise(
-  wave_t * wave,
+  wave_t *wave,
   double *mu,
   double *sig) {
 
@@ -414,8 +439,8 @@ void noise(
 /*****************************************************************************/
 
 void pert2wave(
-  pert_t * pert,
-  wave_t * wave,
+  pert_t *pert,
+  wave_t *wave,
   int track0,
   int track1,
   int xtrack0,
@@ -490,7 +515,7 @@ void pert2wave(
 /*****************************************************************************/
 
 void variance(
-  wave_t * wave,
+  wave_t *wave,
   double dh) {
 
   double dh2, mu, help;
@@ -561,7 +586,7 @@ double wgs84(
 
 void write_l1(
   char *filename,
-  iasi_l1_t * l1) {
+  iasi_l1_t *l1) {
 
   int dimid[10], ncid, time_id, lon_id, lat_id,
     sat_z_id, sat_lon_id, sat_lat_id, nu_id, rad_id;
@@ -619,7 +644,7 @@ void write_l1(
 
 void write_l2(
   char *filename,
-  iasi_l2_t * l2) {
+  iasi_l2_t *l2) {
 
   int dimid[10], ncid, time_id, z_id, lon_id, lat_id, p_id, t_id;
 

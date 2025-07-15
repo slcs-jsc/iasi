@@ -1,3 +1,28 @@
+/*
+  This file is part of the IASI Code Collection.
+  
+  the IASI Code Collections is free software: you can redistribute it
+  and/or modify it under the terms of the GNU General Public License
+  as published by the Free Software Foundation, either version 3 of
+  the License, or (at your option) any later version.
+  
+  The IASI Code Collection is distributed in the hope that it will be
+  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  General Public License for more details.
+  
+  You should have received a copy of the GNU General Public License
+  along with the IASI Code Collection. If not, see
+  <http://www.gnu.org/licenses/>.
+  
+  Copyright (C) 2019-2025 Forschungszentrum Juelich GmbH
+*/
+
+/*! 
+  \file
+  Extract radiance data for retrievals.
+*/
+
 #include "libiasi.h"
 
 /* ------------------------------------------------------------
@@ -328,11 +353,11 @@ int main(
 /*****************************************************************************/
 
 void get_met(
-  ctl2_t * ctl2,
+  ctl2_t *ctl2,
   char *metbase,
   double t,
-  met_t * met0,
-  met_t * met1) {
+  met_t *met0,
+  met_t *met1) {
 
   char filename[LEN];
 
@@ -440,7 +465,7 @@ void intpol_met_3d(
 /*****************************************************************************/
 
 void intpol_met_space(
-  met_t * met,
+  met_t *met,
   double p,
   double lon,
   double lat,
@@ -499,8 +524,8 @@ void intpol_met_space(
 /*****************************************************************************/
 
 void intpol_met_time(
-  met_t * met0,
-  met_t * met1,
+  met_t *met0,
+  met_t *met1,
   double ts,
   double p,
   double lon,
@@ -572,7 +597,7 @@ void intpol_met_time(
 void read_ctl2(
   int argc,
   char *argv[],
-  ctl2_t * ctl2) {
+  ctl2_t *ctl2) {
 
   /* Meteorological data... */
   ctl2->dt_met = scan_ctl(argc, argv, "DT_MET", -1, "21600", NULL);
@@ -588,9 +613,9 @@ void read_ctl2(
 /*****************************************************************************/
 
 void read_met(
-  ctl2_t * ctl2,
+  ctl2_t *ctl2,
   char *filename,
-  met_t * met) {
+  met_t *met) {
 
   char levname[LEN], tstr[10];
 
@@ -706,7 +731,7 @@ void read_met(
 /*****************************************************************************/
 
 void read_met_extrapolate(
-  met_t * met) {
+  met_t *met) {
 
   int ip, ip0, ix, iy;
 
@@ -737,8 +762,8 @@ void read_met_extrapolate(
 /*****************************************************************************/
 
 void read_met_geopot(
-  ctl2_t * ctl2,
-  met_t * met) {
+  ctl2_t *ctl2,
+  met_t *met) {
 
   static double topo_lat[EY], topo_lon[EX], topo_z[EX][EY];
 
@@ -883,7 +908,7 @@ void read_met_help(
   int ncid,
   char *varname,
   char *varname2,
-  met_t * met,
+  met_t *met,
   float dest[EX][EY][EP],
   float scl) {
 
@@ -914,7 +939,7 @@ void read_met_help(
 /*****************************************************************************/
 
 void read_met_periodic(
-  met_t * met) {
+  met_t *met) {
 
   int ip, iy;
 
@@ -949,8 +974,8 @@ void read_met_periodic(
 /*****************************************************************************/
 
 void read_met_sample(
-  ctl2_t * ctl2,
-  met_t * met) {
+  ctl2_t *ctl2,
+  met_t *met) {
 
   met_t *help;
 
@@ -1000,9 +1025,9 @@ void read_met_sample(
 	       iy2 <= GSL_MIN(iy + ctl2->met_sy - 1, met->ny - 1); iy2++)
 	    for (ip2 = GSL_MAX(ip - ctl2->met_sp + 1, 0);
 		 ip2 <= GSL_MIN(ip + ctl2->met_sp - 1, met->np - 1); ip2++) {
-	      w = (1.0f - (float)abs(ix - ix2) /  (float)ctl2->met_sx)
-		* (1.0f - (float)abs(iy - iy2) /  (float)ctl2->met_sy)
-		* (1.0f - (float)abs(ip - ip2) /  (float)ctl2->met_sp);
+	      w = (1.0f - (float) abs(ix - ix2) / (float) ctl2->met_sx)
+		* (1.0f - (float) abs(iy - iy2) / (float) ctl2->met_sy)
+		* (1.0f - (float) abs(ip - ip2) / (float) ctl2->met_sp);
 	      help->ps[ix][iy] += w * met->ps[ix3][iy2];
 	      help->pt[ix][iy] += w * met->pt[ix3][iy2];
 	      help->z[ix][iy][ip] += w * met->z[ix3][iy2][ip2];

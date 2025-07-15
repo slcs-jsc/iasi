@@ -1,3 +1,28 @@
+/*
+  This file is part of the IASI Code Collection.
+  
+  the IASI Code Collections is free software: you can redistribute it
+  and/or modify it under the terms of the GNU General Public License
+  as published by the Free Software Foundation, either version 3 of
+  the License, or (at your option) any later version.
+  
+  The IASI Code Collection is distributed in the hope that it will be
+  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  General Public License for more details.
+  
+  You should have received a copy of the GNU General Public License
+  along with the IASI Code Collection. If not, see
+  <http://www.gnu.org/licenses/>.
+  
+  Copyright (C) 2019-2025 Forschungszentrum Juelich GmbH
+*/
+
+/*! 
+  \file
+  Retrieval processor for IASI.
+*/
+
 #include <mpi.h>
 #include <omp.h>
 #include <netcdf.h>
@@ -506,9 +531,9 @@ void add_var(
 /*****************************************************************************/
 
 void buffer_nc(
-  atm_t * atm,
+  atm_t *atm,
   double chisq,
-  ncd_t * ncd,
+  ncd_t *ncd,
   int track,
   int xtrack,
   int np0,
@@ -532,10 +557,10 @@ void buffer_nc(
 /*****************************************************************************/
 
 double cost_function(
-  gsl_vector * dx,
-  gsl_vector * dy,
-  gsl_matrix * s_a_inv,
-  gsl_vector * sig_eps_inv) {
+  gsl_vector *dx,
+  gsl_vector *dy,
+  gsl_matrix *s_a_inv,
+  gsl_vector *sig_eps_inv) {
 
   gsl_vector *x_aux, *y_aux;
 
@@ -570,11 +595,11 @@ double cost_function(
 /************************************************************************/
 
 void init_l2(
-  ncd_t * ncd,
+  ncd_t *ncd,
   int track,
   int xtrack,
-  ctl_t * ctl,
-  atm_t * atm) {
+  ctl_t *ctl,
+  atm_t *atm) {
 
   static atm_t atm_iasi;
 
@@ -626,7 +651,7 @@ void init_l2(
 /*****************************************************************************/
 
 void matrix_invert(
-  gsl_matrix * a) {
+  gsl_matrix *a) {
 
   size_t diag = 1, i, j, n;
 
@@ -656,10 +681,10 @@ void matrix_invert(
 /*****************************************************************************/
 
 void matrix_product(
-  gsl_matrix * a,
-  gsl_vector * b,
+  gsl_matrix *a,
+  gsl_vector *b,
   int transpose,
-  gsl_matrix * c) {
+  gsl_matrix *c) {
 
   gsl_matrix *aux;
 
@@ -705,12 +730,12 @@ void matrix_product(
 /*****************************************************************************/
 
 void optimal_estimation(
-  ret_t * ret,
-  ctl_t * ctl,
-  obs_t * obs_meas,
-  obs_t * obs_i,
-  atm_t * atm_apr,
-  atm_t * atm_i,
+  ret_t *ret,
+  ctl_t *ctl,
+  obs_t *obs_meas,
+  obs_t *obs_i,
+  atm_t *atm_apr,
+  atm_t *atm_i,
   double *chisq) {
 
   static int ipa[N], iqa[N];
@@ -899,7 +924,7 @@ void optimal_estimation(
 
 void read_nc(
   char *filename,
-  ncd_t * ncd) {
+  ncd_t *ncd) {
 
   int dimid, varid;
 
@@ -946,8 +971,8 @@ void read_nc(
 void read_ret_ctl(
   int argc,
   char *argv[],
-  ctl_t * ctl,
-  ret_t * ret) {
+  ctl_t *ctl,
+  ret_t *ret) {
 
   int id, ig, iw;
 
@@ -987,12 +1012,12 @@ void read_ret_ctl(
 /*****************************************************************************/
 
 void set_cov_apr(
-  ret_t * ret,
-  ctl_t * ctl,
-  atm_t * atm,
+  ret_t *ret,
+  ctl_t *ctl,
+  atm_t *atm,
   int *iqa,
   int *ipa,
-  gsl_matrix * s_a) {
+  gsl_matrix *s_a) {
 
   gsl_vector *x_a;
 
@@ -1092,12 +1117,12 @@ void set_cov_apr(
 /*****************************************************************************/
 
 void set_cov_meas(
-  ret_t * ret,
-  ctl_t * ctl,
-  obs_t * obs,
-  gsl_vector * sig_noise,
-  gsl_vector * sig_formod,
-  gsl_vector * sig_eps_inv) {
+  ret_t *ret,
+  ctl_t *ctl,
+  obs_t *obs,
+  gsl_vector *sig_noise,
+  gsl_vector *sig_formod,
+  gsl_vector *sig_eps_inv) {
 
   static obs_t obs_err;
 
@@ -1140,7 +1165,7 @@ void set_cov_meas(
 
 void write_nc(
   char *filename,
-  ncd_t * ncd) {
+  ncd_t *ncd) {
 
   int dimid[10], c_id, p_id, t_id, z_id;
 

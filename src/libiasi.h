@@ -1,3 +1,83 @@
+/*
+  This file is part of the IASI Code Collection.
+  
+  the IASI Code Collections is free software: you can redistribute it
+  and/or modify it under the terms of the GNU General Public License
+  as published by the Free Software Foundation, either version 3 of
+  the License, or (at your option) any later version.
+  
+  The IASI Code Collection is distributed in the hope that it will be
+  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  General Public License for more details.
+  
+  You should have received a copy of the GNU General Public License
+  along with the IASI Code Collection. If not, see
+  <http://www.gnu.org/licenses/>.
+  
+  Copyright (C) 2019-2025 Forschungszentrum Juelich GmbH
+*/
+
+/*! 
+  \file
+  IASI Code Collection library declarations.
+*/
+
+/*! 
+  \mainpage
+
+  The IASI Code Collection enables data processing and analysis for
+  remote sensing observations captured by Eumetsat's Infrared
+  Atmospheric Sounding Interferometer (IASI).
+  
+  \section Introduction
+
+  The source code of the IASI Code Collection is available from the
+  [git repository](https://github.com/slcs-jsc/airs). Please see the
+  [README.md](https://github.com/slcs-jsc/airs/blob/master/README.md)
+  in the git repository for introductory information. More information
+  can be found in the [user manual](https://slcs-jsc.github.io/airs).
+  
+  This doxygen manual contains information about the algorithms and
+  data structures used in the code. Please refer to the `libairs.h'
+  documentation for a first overview.
+  
+  \section References
+  
+  For citing the model in scientific publications, please see
+  [CITATION.cff](https://github.com/slcs-jsc/airs/blob/master/CITATION.cff).
+  
+  \section License
+  
+  The IASI Code Collection is being develop at the Jülich Supercomputing Centre,
+  Forschungszentrum Jülich, Germany.
+  
+  the IASI Code Collection is distributed under the terms of the
+  [GNU General Public License v3.0](https://github.com/slcs-jsc/airs/blob/master/COPYING).
+  
+  \section Contributing
+  
+  We are interested in supporting operational and research
+  applications with the IASI Code Collection.
+  
+  You can submit bug reports or feature requests on the
+  [issue tracker](https://github.com/slcs-jsc/airs/issues).
+  
+  Proposed code changes and fixes can be submitted as
+  [pull requests](https://github.com/slcs-jsc/airs/pulls).
+  
+  Please do not hesitate to contact us if you have any questions or
+  need assistance.
+  
+  \section Contact
+  
+  Dr. Lars Hoffmann
+  
+  Jülich Supercomputing Centre, Forschungszentrum Jülich
+  
+  e-mail: <l.hoffmann@fz-juelich.de>
+*/
+
 #include <netcdf.h>
 #include <gsl/gsl_randist.h>
 #include <gsl/gsl_fft_complex.h>
@@ -21,13 +101,13 @@
 /*! Across-track size of IASI radiance granule (don't change). */
 #define L1_NXTRACK 60
 
-/*! Number of AIRS pressure layers (don't change). */
+/*! Number of IASI pressure layers (don't change). */
 #define L2_NLAY 27
 
-/*! Maximum along-track size of AIRS retrieval granule (don't change). */
+/*! Maximum along-track size of IASI retrieval granule (don't change). */
 #define L2_NTRACK 1800
 
-/*! Across-track size of AIRS retrieval granule (don't change). */
+/*! Across-track size of IASI retrieval granule (don't change). */
 #define L2_NXTRACK 60
 
 /*! Number of channels of IASI radiance granule. */

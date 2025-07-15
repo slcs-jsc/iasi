@@ -1,3 +1,28 @@
+/*
+  This file is part of the IASI Code Collection.
+  
+  the IASI Code Collections is free software: you can redistribute it
+  and/or modify it under the terms of the GNU General Public License
+  as published by the Free Software Foundation, either version 3 of
+  the License, or (at your option) any later version.
+  
+  The IASI Code Collection is distributed in the hope that it will be
+  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  General Public License for more details.
+  
+  You should have received a copy of the GNU General Public License
+  along with the IASI Code Collection. If not, see
+  <http://www.gnu.org/licenses/>.
+  
+  Copyright (C) 2019-2025 Forschungszentrum Juelich GmbH
+*/
+
+/*! 
+  \file
+  Extract perturbation data.
+*/
+
 #include "libiasi.h"
 
 /* ------------------------------------------------------------
@@ -147,8 +172,7 @@ int main(
     for (track = 0; track < iasi_rad->ntrack; track++)
       for (xtrack = 0; xtrack < L1_NXTRACK; xtrack++)
 	pert_4mu->dc[track0 + track][xtrack]
-	  = BRIGHT(iasi_rad->Rad[track][xtrack][2345],
-		   iasi_rad->freq[2345]);
+	  = BRIGHT(iasi_rad->Rad[track][xtrack][2345], iasi_rad->freq[2345]);
 
     /* Get 4.3 micron brightness temperature... */
     for (track = 0; track < iasi_rad->ntrack; track++)

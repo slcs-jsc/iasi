@@ -1,3 +1,28 @@
+/*
+  This file is part of the IASI Code Collection.
+  
+  the IASI Code Collections is free software: you can redistribute it
+  and/or modify it under the terms of the GNU General Public License
+  as published by the Free Software Foundation, either version 3 of
+  the License, or (at your option) any later version.
+  
+  The IASI Code Collection is distributed in the hope that it will be
+  useful, but WITHOUT ANY WARRANTY; without even the implied warranty
+  of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+  General Public License for more details.
+  
+  You should have received a copy of the GNU General Public License
+  along with the IASI Code Collection. If not, see
+  <http://www.gnu.org/licenses/>.
+  
+  Copyright (C) 2019-2025 Forschungszentrum Juelich GmbH
+*/
+
+/*! 
+  \file
+  Get noise estimates from radiance data.
+*/
+
 #include "libiasi.h"
 
 int main(
@@ -36,9 +61,8 @@ int main(
 	  "# $2 = channel index\n"
 	  "# $3 = wavenumber [1/cm]\n"
 	  "# $4 = mean BT [K]\n"
-	  "# $5 = NEDT [K]\n"
-	  "# $6 = NESR [W/(m^2 sr cm^-1)]\n");
-  
+	  "# $5 = NEDT [K]\n" "# $6 = NESR [W/(m^2 sr cm^-1)]\n");
+
   /* Analyze blocks of data... */
   for (itrack = 0; itrack < iasi_rad->ntrack; itrack += 60) {
 
@@ -65,9 +89,9 @@ int main(
 	noise(&wave, &mu, &sigma);
 
 	/* Get NESR... */
-	nesr=PLANCK(mu+sigma, iasi_rad->freq[ichan])
-	  -PLANCK(mu, iasi_rad->freq[ichan]);
-	
+	nesr = PLANCK(mu + sigma, iasi_rad->freq[ichan])
+	  - PLANCK(mu, iasi_rad->freq[ichan]);
+
 	/* Write output... */
 	if (gsl_finite(sigma))
 	  fprintf(out, "%d %d %.4f %g %g %g\n", itrack, ichan,
