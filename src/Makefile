@@ -71,7 +71,7 @@ all: $(EXC) retrieval
 	rm -f *~
 
 $(EXC): %: %.c libiasi.o jurassic.o
-	$(CC) $(CFLAGS) -o $@ $< libiasi.o jurassic.o $(LDFLAGS) -static
+	$(CC) $(CFLAGS) -o $@ $< libiasi.o jurassic.o $(LDFLAGS)
 
 libiasi.o: libiasi.c libiasi.h Makefile
 	$(CC) $(CFLAGS) -c -o libiasi.o libiasi.c 
