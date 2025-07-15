@@ -10,3 +10,7 @@ src/noise
 src/perturbation
 src/retrieval
 src/spec2tab
+src/*.gcno
+src/*.gcda
+src/*.gcov
+src/coverage*

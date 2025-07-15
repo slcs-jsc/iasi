@@ -26,6 +26,9 @@ INFO ?= 0
 # Compile for profiling...
 PROF ?= 0
 
+# Compile for coverage testing...
+COV ?= 0
+
 # -----------------------------------------------------------------------------
 # Set flags for GNU compiler...
 # -----------------------------------------------------------------------------
@@ -56,6 +59,11 @@ ifeq ($(PROF),1)
   CFLAGS += -pg
 endif
 
+# Compile for coverage testing...
+ifeq ($(COV),1)
+  CFLAGS += --coverage
+endif
+
 # Static compilation...
 ifeq ($(STATIC),1)
   CFLAGS += -static
@@ -83,7 +91,13 @@ retrieval: retrieval.c jurassic.o
 	$(MPICC) $(CFLAGS) -o retrieval retrieval.c jurassic.o $(LDFLAGS_RET)
 
 clean:
-	rm -f $(EXC) retrieval *.o *~
+	rm -rf $(EXC) retrieval *.o *.gcda *.gcno *.gcov coverage* *~
+
+coverage:
+	lcov --capture --directory . --output-file=coverage.info ; \
+	lcov --remove coverage.info '*/jurassic.c' -o coverage_filtered.info ; \
+	genhtml coverage_filtered.info --legend --frames --output-directory=coverage ; \
+	gcov -abcfu *.c || true
 
 cppcheck:
 	cppcheck --enable=all ./
