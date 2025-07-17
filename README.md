@@ -26,7 +26,7 @@ and 'make' are required for installation.
 
 Start by downloading the source code from the git repository:
 
-    git clone https://jugit.fz-juelich.de/slcs/iasi
+    git clone https://github.com/slcs-jsc/gps
 
 Change to the directory iasi/ which holds source codes,
 libraries, documentation, etc:
