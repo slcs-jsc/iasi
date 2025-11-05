@@ -124,62 +124,6 @@ typedef struct {
 
 } ncd_t;
 
-/*! Retrieval control parameters. */
-typedef struct {
-
-  /*! Recomputation of kernel matrix (number of iterations). */
-  int kernel_recomp;
-
-  /*! Maximum number of iterations. */
-  int conv_itmax;
-
-  /*! Minimum normalized step size in state space. */
-  double conv_dmin;
-
-  /*! Forward model error [%]. */
-  double err_formod[ND];
-
-  /*! Noise error [W/(m^2 sr cm^-1)]. */
-  double err_noise[ND];
-
-  /*! Pressure error [%]. */
-  double err_press;
-
-  /*! Vertical correlation length for pressure error [km]. */
-  double err_press_cz;
-
-  /*! Horizontal correlation length for pressure error [km]. */
-  double err_press_ch;
-
-  /*! Temperature error [K]. */
-  double err_temp;
-
-  /*! Vertical correlation length for temperature error [km]. */
-  double err_temp_cz;
-
-  /*! Horizontal correlation length for temperature error [km]. */
-  double err_temp_ch;
-
-  /*! Volume mixing ratio error [%]. */
-  double err_q[NG];
-
-  /*! Vertical correlation length for volume mixing ratio error [km]. */
-  double err_q_cz[NG];
-
-  /*! Horizontal correlation length for volume mixing ratio error [km]. */
-  double err_q_ch[NG];
-
-  /*! Extinction error [1/km]. */
-  double err_k[NW];
-
-  /*! Vertical correlation length for extinction error [km]. */
-  double err_k_cz[NW];
-
-  /*! Horizontal correlation length for extinction error [km]. */
-  double err_k_ch[NW];
-
-} ret_t;
-
 /* ------------------------------------------------------------
    Functions...
    ------------------------------------------------------------ */
@@ -205,13 +149,6 @@ void buffer_nc(
   int np0,
   int np1);
 
-/*! Compute cost function. */
-double cost_function(
-  gsl_vector * dx,
-  gsl_vector * dy,
-  gsl_matrix * s_a_inv,
-  gsl_vector * sig_eps_inv);
-
 /*! Initialize with IASI Level-2 data. */
 void init_l2(
   ncd_t * ncd,
@@ -219,17 +156,6 @@ void init_l2(
   int xtrack,
   ctl_t * ctl,
   atm_t * atm);
-
-/*! Invert symmetric matrix. */
-void matrix_invert(
-  gsl_matrix * a);
-
-/*! Compute matrix product A^TBA or ABA^T for diagonal matrix B. */
-void matrix_product(
-  gsl_matrix * a,
-  gsl_vector * b,
-  int transpose,
-  gsl_matrix * c);
 
 /*! Carry out optimal estimation retrieval. */
 void optimal_estimation(
@@ -246,31 +172,6 @@ void optimal_estimation(
 void read_nc(
   char *filename,
   ncd_t * ncd);
-
-/*! Read retrieval control parameters. */
-void read_ret_ctl(
-  int argc,
-  char *argv[],
-  ctl_t * ctl,
-  ret_t * ret);
-
-/*! Set a priori covariance. */
-void set_cov_apr(
-  ret_t * ret,
-  ctl_t * ctl,
-  atm_t * atm,
-  int *iqa,
-  int *ipa,
-  gsl_matrix * s_a);
-
-/*! Set measurement errors. */
-void set_cov_meas(
-  ret_t * ret,
-  ctl_t * ctl,
-  obs_t * obs,
-  gsl_vector * sig_noise,
-  gsl_vector * sig_formod,
-  gsl_vector * sig_eps_inv);
 
 /*! Write to netCDF file... */
 void write_nc(
@@ -319,7 +220,7 @@ int main(
 
   /* Read control parameters... */
   read_ctl(argc, argv, &ctl);
-  read_ret_ctl(argc, argv, &ctl, &ret);
+  read_ret(argc, argv, &ctl, &ret);
   debug = (int) scan_ctl(argc, argv, "DEBUG", -1, "1", NULL);
   
   /* Initialize look-up tables... */
@@ -558,44 +459,6 @@ void buffer_nc(
   }
 }
 
-/*****************************************************************************/
-
-double cost_function(
-  gsl_vector *dx,
-  gsl_vector *dy,
-  gsl_matrix *s_a_inv,
-  gsl_vector *sig_eps_inv) {
-
-  gsl_vector *x_aux, *y_aux;
-
-  double chisq_a, chisq_m = 0;
-
-  size_t i, m, n;
-
-  /* Get sizes... */
-  m = dy->size;
-  n = dx->size;
-
-  /* Allocate... */
-  x_aux = gsl_vector_alloc(n);
-  y_aux = gsl_vector_alloc(m);
-
-  /* Determine normalized cost function...
-     (chi^2 = 1/m * [dy^T * S_eps^{-1} * dy + dx^T * S_a^{-1} * dx]) */
-  for (i = 0; i < m; i++)
-    chisq_m +=
-      gsl_pow_2(gsl_vector_get(dy, i) * gsl_vector_get(sig_eps_inv, i));
-  gsl_blas_dgemv(CblasNoTrans, 1.0, s_a_inv, dx, 0.0, x_aux);
-  gsl_blas_ddot(dx, x_aux, &chisq_a);
-
-  /* Free... */
-  gsl_vector_free(x_aux);
-  gsl_vector_free(y_aux);
-
-  /* Return cost function value... */
-  return (chisq_m + chisq_a) / (double) m;
-}
-
 /************************************************************************/
 
 void init_l2(
@@ -650,85 +513,6 @@ void init_l2(
     atm->t[ip] = w * t + (1 - w) * atm->t[ip];
     atm->p[ip] = w * p + (1 - w) * atm->p[ip];
   }
-}
-
-/*****************************************************************************/
-
-void matrix_invert(
-  gsl_matrix *a) {
-
-  size_t diag = 1, i, j, n;
-
-  /* Get size... */
-  n = a->size1;
-
-  /* Check if matrix is diagonal... */
-  for (i = 0; i < n && diag; i++)
-    for (j = i + 1; j < n; j++)
-      if (gsl_matrix_get(a, i, j) != 0) {
-	diag = 0;
-	break;
-      }
-
-  /* Quick inversion of diagonal matrix... */
-  if (diag)
-    for (i = 0; i < n; i++)
-      gsl_matrix_set(a, i, i, 1 / gsl_matrix_get(a, i, i));
-
-  /* Matrix inversion by means of Cholesky decomposition... */
-  else {
-    gsl_linalg_cholesky_decomp(a);
-    gsl_linalg_cholesky_invert(a);
-  }
-}
-
-/*****************************************************************************/
-
-void matrix_product(
-  gsl_matrix *a,
-  gsl_vector *b,
-  int transpose,
-  gsl_matrix *c) {
-
-  gsl_matrix *aux;
-
-  size_t i, j, m, n;
-
-  /* Set sizes... */
-  m = a->size1;
-  n = a->size2;
-
-  /* Allocate... */
-  aux = gsl_matrix_alloc(m, n);
-
-  /* Compute A^T B A... */
-  if (transpose == 1) {
-
-    /* Compute B^1/2 A... */
-    for (i = 0; i < m; i++)
-      for (j = 0; j < n; j++)
-	gsl_matrix_set(aux, i, j,
-		       gsl_vector_get(b, i) * gsl_matrix_get(a, i, j));
-
-    /* Compute A^T B A = (B^1/2 A)^T (B^1/2 A)... */
-    gsl_blas_dgemm(CblasTrans, CblasNoTrans, 1.0, aux, aux, 0.0, c);
-  }
-
-  /* Compute A B A^T... */
-  else if (transpose == 2) {
-
-    /* Compute A B^1/2... */
-    for (i = 0; i < m; i++)
-      for (j = 0; j < n; j++)
-	gsl_matrix_set(aux, i, j,
-		       gsl_matrix_get(a, i, j) * gsl_vector_get(b, j));
-
-    /* Compute A B A^T = (A B^1/2) (A B^1/2)^T... */
-    gsl_blas_dgemm(CblasNoTrans, CblasTrans, 1.0, aux, aux, 0.0, c);
-  }
-
-  /* Free... */
-  gsl_matrix_free(aux);
 }
 
 /*****************************************************************************/
@@ -969,201 +753,6 @@ void read_nc(
   NC(nc_get_var_double(ncd->ncid, varid, ncd->l2_p));
   NC(nc_inq_varid(ncd->ncid, "l2_temp", &varid));
   NC(nc_get_var_double(ncd->ncid, varid, ncd->l2_t[0][0]));
-}
-
-/*****************************************************************************/
-
-void read_ret_ctl(
-  int argc,
-  char *argv[],
-  ctl_t *ctl,
-  ret_t *ret) {
-
-  int id, ig, iw;
-
-  /* Iteration control... */
-  ret->kernel_recomp =
-    (int) scan_ctl(argc, argv, "KERNEL_RECOMP", -1, "3", NULL);
-  ret->conv_itmax = (int) scan_ctl(argc, argv, "CONV_ITMAX", -1, "30", NULL);
-  ret->conv_dmin = scan_ctl(argc, argv, "CONV_DMIN", -1, "0.1", NULL);
-
-  for (id = 0; id < ctl->nd; id++)
-    ret->err_formod[id] = scan_ctl(argc, argv, "ERR_FORMOD", id, "0", NULL);
-
-  for (id = 0; id < ctl->nd; id++)
-    ret->err_noise[id] = scan_ctl(argc, argv, "ERR_NOISE", id, "0", NULL);
-
-  ret->err_press = scan_ctl(argc, argv, "ERR_PRESS", -1, "0", NULL);
-  ret->err_press_cz = scan_ctl(argc, argv, "ERR_PRESS_CZ", -1, "-999", NULL);
-  ret->err_press_ch = scan_ctl(argc, argv, "ERR_PRESS_CH", -1, "-999", NULL);
-
-  ret->err_temp = scan_ctl(argc, argv, "ERR_TEMP", -1, "0", NULL);
-  ret->err_temp_cz = scan_ctl(argc, argv, "ERR_TEMP_CZ", -1, "-999", NULL);
-  ret->err_temp_ch = scan_ctl(argc, argv, "ERR_TEMP_CH", -1, "-999", NULL);
-
-  for (ig = 0; ig < ctl->ng; ig++) {
-    ret->err_q[ig] = scan_ctl(argc, argv, "ERR_Q", ig, "0", NULL);
-    ret->err_q_cz[ig] = scan_ctl(argc, argv, "ERR_Q_CZ", ig, "-999", NULL);
-    ret->err_q_ch[ig] = scan_ctl(argc, argv, "ERR_Q_CH", ig, "-999", NULL);
-  }
-
-  for (iw = 0; iw < ctl->nw; iw++) {
-    ret->err_k[iw] = scan_ctl(argc, argv, "ERR_K", iw, "0", NULL);
-    ret->err_k_cz[iw] = scan_ctl(argc, argv, "ERR_K_CZ", iw, "-999", NULL);
-    ret->err_k_ch[iw] = scan_ctl(argc, argv, "ERR_K_CH", iw, "-999", NULL);
-  }
-}
-
-/*****************************************************************************/
-
-void set_cov_apr(
-  ret_t *ret,
-  ctl_t *ctl,
-  atm_t *atm,
-  int *iqa,
-  int *ipa,
-  gsl_matrix *s_a) {
-
-  gsl_vector *x_a;
-
-  double ch, cz, rho, x0[3], x1[3];
-
-  int ig, iw;
-
-  size_t i, j, n;
-
-  /* Get sizes... */
-  n = s_a->size1;
-
-  /* Allocate... */
-  x_a = gsl_vector_alloc(n);
-
-  /* Get sigma vector... */
-  atm2x(ctl, atm, x_a, NULL, NULL);
-  for (i = 0; i < n; i++) {
-    if (iqa[i] == IDXP)
-      gsl_vector_set(x_a, i, ret->err_press / 100 * gsl_vector_get(x_a, i));
-    if (iqa[i] == IDXT)
-      gsl_vector_set(x_a, i, ret->err_temp);
-    for (ig = 0; ig < ctl->ng; ig++)
-      if (iqa[i] == IDXQ(ig))
-	gsl_vector_set(x_a, i, ret->err_q[ig] / 100 * gsl_vector_get(x_a, i));
-    for (iw = 0; iw < ctl->nw; iw++)
-      if (iqa[i] == IDXK(iw))
-	gsl_vector_set(x_a, i, ret->err_k[iw]);
-  }
-
-  /* Check standard deviations... */
-  for (i = 0; i < n; i++)
-    if (gsl_pow_2(gsl_vector_get(x_a, i)) <= 0)
-      ERRMSG("Check a priori data (zero standard deviation)!");
-
-  /* Initialize diagonal covariance... */
-  gsl_matrix_set_zero(s_a);
-  for (i = 0; i < n; i++)
-    gsl_matrix_set(s_a, i, i, gsl_pow_2(gsl_vector_get(x_a, i)));
-
-  /* Loop over matrix elements... */
-  for (i = 0; i < n; i++)
-    for (j = 0; j < n; j++)
-      if (i != j && iqa[i] == iqa[j]) {
-
-	/* Initialize... */
-	cz = ch = 0;
-
-	/* Set correlation lengths for pressure... */
-	if (iqa[i] == IDXP) {
-	  cz = ret->err_press_cz;
-	  ch = ret->err_press_ch;
-	}
-
-	/* Set correlation lengths for temperature... */
-	if (iqa[i] == IDXT) {
-	  cz = ret->err_temp_cz;
-	  ch = ret->err_temp_ch;
-	}
-
-	/* Set correlation lengths for volume mixing ratios... */
-	for (ig = 0; ig < ctl->ng; ig++)
-	  if (iqa[i] == IDXQ(ig)) {
-	    cz = ret->err_q_cz[ig];
-	    ch = ret->err_q_ch[ig];
-	  }
-
-	/* Set correlation lengths for extinction... */
-	for (iw = 0; iw < ctl->nw; iw++)
-	  if (iqa[i] == IDXK(iw)) {
-	    cz = ret->err_k_cz[iw];
-	    ch = ret->err_k_ch[iw];
-	  }
-
-	/* Compute correlations... */
-	if (cz > 0 && ch > 0) {
-
-	  /* Get Cartesian coordinates... */
-	  geo2cart(0, atm->lon[ipa[i]], atm->lat[ipa[i]], x0);
-	  geo2cart(0, atm->lon[ipa[j]], atm->lat[ipa[j]], x1);
-
-	  /* Compute correlations... */
-	  rho =
-	    exp(-DIST(x0, x1) / ch -
-		fabs(atm->z[ipa[i]] - atm->z[ipa[j]]) / cz);
-
-	  /* Set covariance... */
-	  gsl_matrix_set(s_a, i, j, gsl_vector_get(x_a, i)
-			 * gsl_vector_get(x_a, j) * rho);
-	}
-      }
-
-  /* Free... */
-  gsl_vector_free(x_a);
-}
-
-/*****************************************************************************/
-
-void set_cov_meas(
-  ret_t *ret,
-  ctl_t *ctl,
-  obs_t *obs,
-  gsl_vector *sig_noise,
-  gsl_vector *sig_formod,
-  gsl_vector *sig_eps_inv) {
-
-  static obs_t obs_err;
-
-  int id, ir;
-
-  size_t i, m;
-
-  /* Get size... */
-  m = sig_eps_inv->size;
-
-  /* Noise error (always considered in retrieval fit)... */
-  copy_obs(ctl, &obs_err, obs, 1);
-  for (ir = 0; ir < obs_err.nr; ir++)
-    for (id = 0; id < ctl->nd; id++)
-      obs_err.rad[id][ir]
-	= (gsl_finite(obs->rad[id][ir]) ? ret->err_noise[id] : GSL_NAN);
-  obs2y(ctl, &obs_err, sig_noise, NULL, NULL);
-
-  /* Forward model error (always considered in retrieval fit)... */
-  copy_obs(ctl, &obs_err, obs, 1);
-  for (ir = 0; ir < obs_err.nr; ir++)
-    for (id = 0; id < ctl->nd; id++)
-      obs_err.rad[id][ir]
-	= fabs(ret->err_formod[id] / 100 * obs->rad[id][ir]);
-  obs2y(ctl, &obs_err, sig_formod, NULL, NULL);
-
-  /* Total error... */
-  for (i = 0; i < m; i++)
-    gsl_vector_set(sig_eps_inv, i,
-		   1 / sqrt(gsl_pow_2(gsl_vector_get(sig_noise, i))
-			    + gsl_pow_2(gsl_vector_get(sig_formod, i))));
-
-  /* Check standard deviations... */
-  for (i = 0; i < m; i++)
-    if (gsl_vector_get(sig_eps_inv, i) <= 0)
-      ERRMSG("Check measurement errors (zero standard deviation)!");
 }
 
 /*****************************************************************************/
