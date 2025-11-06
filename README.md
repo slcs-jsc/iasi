@@ -17,6 +17,7 @@ Interferometer (IASI).
 [![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/slcs-jsc/iasi)
 [![license](https://img.shields.io/github/license/slcs-jsc/iasi.svg)](https://github.com/slcs-jsc/iasi/blob/master/COPYING)
 [![doi](https://zenodo.org/badge/DOI/10.5281/zenodo.15867855.svg)](https://doi.org/10.5281/zenodo.15867855)
+[![SWH](https://archive.softwareheritage.org/badge/origin/https://github.com/slcs-jsc/iasi/)](https://archive.softwareheritage.org/browse/origin/?origin_url=https://github.com/slcs-jsc/iasi)
 
 ## Installation
 
