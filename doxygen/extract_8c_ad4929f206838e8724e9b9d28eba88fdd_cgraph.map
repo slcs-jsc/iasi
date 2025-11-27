@@ -1,0 +1,10 @@
+<map id="get_met" name="get_met">
+<area shape="rect" id="node1" title="Get meteorological data for given timestep." alt="" coords="5,81,75,108"/>
+<area shape="rect" id="node2" href="$extract_8c.html#aa0c58f85ea7abc175737176da82f2939" title="Get meteorological data for timestep." alt="" coords="123,56,223,83"/>
+<area shape="rect" id="node3" href="$extract_8c.html#af4b8df992b9377685c4ea6ca59e389f4" title="Read meteorological data file." alt="" coords="135,107,211,133"/>
+<area shape="rect" id="node4" href="$extract_8c.html#a089d9c0099e3fc6944c2a48667362ca0" title="Extrapolate meteorological data at lower boundary." alt="" coords="271,5,417,32"/>
+<area shape="rect" id="node5" href="$extract_8c.html#aecc323fc59836bc303619b4cc48cdd31" title="Calculate geopotential heights." alt="" coords="283,56,405,83"/>
+<area shape="rect" id="node6" href="$extract_8c.html#ab4bf3e7235a161e9845cb0cf68aedc5c" title="Read and convert variable from meteorological data file." alt="" coords="291,107,397,133"/>
+<area shape="rect" id="node7" href="$extract_8c.html#a38f91765df8eb0a66fb3a6408dca0600" title="Create meteorological data with periodic boundary conditions." alt="" coords="280,157,408,184"/>
+<area shape="rect" id="node8" href="$extract_8c.html#a868644719fc7bbee6e8690a9253fb9db" title="Downsampling of meteorological data." alt="" coords="281,208,407,235"/>
+</map>

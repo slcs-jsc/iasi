@@ -1,0 +1,21 @@
+<map id="main" name="main">
+<area shape="rect" id="node1" title=" " alt="" coords="5,272,56,299"/>
+<area shape="rect" id="node2" href="$extract_8c.html#ad4929f206838e8724e9b9d28eba88fdd" title="Get meteorological data for given timestep." alt="" coords="127,120,196,147"/>
+<area shape="rect" id="node10" href="$libiasi_8c.html#a41cb1ea4ee300d952130f82b3c2a3d53" title="Read IASI Level&#45;1 data and convert to radiation type." alt="" coords="124,196,199,223"/>
+<area shape="rect" id="node12" href="$extract_8c.html#afdd77fa4b6ba41dc1079da5614588b1a" title="Temporal interpolation of meteorological data." alt="" coords="104,247,219,273"/>
+<area shape="rect" id="node16" href="$extract_8c.html#a041c10db6e4c2e94778e8b79d8d4e47b" title="Read control parameters." alt="" coords="124,297,199,324"/>
+<area shape="rect" id="node17" href="$libiasi_8c.html#a637f1f6dbc6891656bd1b9f226be0570" title="Write IASI Level&#45;1 data." alt="" coords="128,348,195,375"/>
+<area shape="rect" id="node19" href="$libiasi_8c.html#a5bcabcac330004dcc98ca019fd2d9fdf" title="Write IASI Level&#45;2 data." alt="" coords="128,399,195,425"/>
+<area shape="rect" id="node3" href="$extract_8c.html#aa0c58f85ea7abc175737176da82f2939" title="Get meteorological data for timestep." alt="" coords="279,69,379,96"/>
+<area shape="rect" id="node4" href="$extract_8c.html#af4b8df992b9377685c4ea6ca59e389f4" title="Read meteorological data file." alt="" coords="291,120,367,147"/>
+<area shape="rect" id="node5" href="$extract_8c.html#a089d9c0099e3fc6944c2a48667362ca0" title="Extrapolate meteorological data at lower boundary." alt="" coords="439,5,585,32"/>
+<area shape="rect" id="node6" href="$extract_8c.html#aecc323fc59836bc303619b4cc48cdd31" title="Calculate geopotential heights." alt="" coords="451,56,573,83"/>
+<area shape="rect" id="node7" href="$extract_8c.html#ab4bf3e7235a161e9845cb0cf68aedc5c" title="Read and convert variable from meteorological data file." alt="" coords="459,107,565,133"/>
+<area shape="rect" id="node8" href="$extract_8c.html#a38f91765df8eb0a66fb3a6408dca0600" title="Create meteorological data with periodic boundary conditions." alt="" coords="448,157,576,184"/>
+<area shape="rect" id="node9" href="$extract_8c.html#a868644719fc7bbee6e8690a9253fb9db" title="Downsampling of meteorological data." alt="" coords="449,208,575,235"/>
+<area shape="rect" id="node11" href="$libiasi_8c.html#afc1f5750ca24922421e185fd2c507a3b" title="Calculate Earth radius according to WGS&#45;84 reference ellipsoid." alt="" coords="299,196,359,223"/>
+<area shape="rect" id="node13" href="$extract_8c.html#a3e0460e2993e48d1c757498b7c411ead" title="Spatial interpolation of meteorological data." alt="" coords="267,259,391,285"/>
+<area shape="rect" id="node14" href="$extract_8c.html#a4fd1c0e3879666ffd341ca17afe0f706" title="Linear interpolation of 2&#45;D meteorological data." alt="" coords="461,259,563,285"/>
+<area shape="rect" id="node15" href="$extract_8c.html#a6f092fadf1adc9dc38f37eb0cb572703" title="Linear interpolation of 3&#45;D meteorological data." alt="" coords="461,309,563,336"/>
+<area shape="rect" id="node18" href="$libiasi_8c.html#a832132b5251582419a6ca58fe3615f1c" title="Add variable to netCDF file." alt="" coords="295,373,363,400"/>
+</map>

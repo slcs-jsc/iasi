@@ -1,0 +1,6 @@
+<map id="intpol_met_time" name="intpol_met_time">
+<area shape="rect" id="node1" title="Temporal interpolation of meteorological data." alt="" coords="5,31,120,57"/>
+<area shape="rect" id="node2" href="$extract_8c.html#a3e0460e2993e48d1c757498b7c411ead" title="Spatial interpolation of meteorological data." alt="" coords="168,31,292,57"/>
+<area shape="rect" id="node3" href="$extract_8c.html#a4fd1c0e3879666ffd341ca17afe0f706" title="Linear interpolation of 2&#45;D meteorological data." alt="" coords="340,5,443,32"/>
+<area shape="rect" id="node4" href="$extract_8c.html#a6f092fadf1adc9dc38f37eb0cb572703" title="Linear interpolation of 3&#45;D meteorological data." alt="" coords="340,56,443,83"/>
+</map>
