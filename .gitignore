@@ -3,13 +3,17 @@ docs/site/
 libs/build/
 projects/
 src/bands
+src/day2doy
+src/doy2day
 src/extract
 src/jurassic.o
+src/jsec2time
 src/libiasi.o
 src/noise
 src/perturbation
 src/retrieval
 src/spec2tab
+src/time2jsec
 src/*.gcno
 src/*.gcda
 src/*.gcov
