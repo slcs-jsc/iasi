@@ -33,19 +33,19 @@
   \section Introduction
 
   The source code of the IASI Code Collection is available from the
-  [git repository](https://github.com/slcs-jsc/airs). Please see the
-  [README.md](https://github.com/slcs-jsc/airs/blob/master/README.md)
+  [git repository](https://github.com/slcs-jsc/iasi). Please see the
+  [README.md](https://github.com/slcs-jsc/iasi/blob/master/README.md)
   in the git repository for introductory information. More information
-  can be found in the [user manual](https://slcs-jsc.github.io/airs).
+  can be found in the [user manual](https://slcs-jsc.github.io/iasi).
   
   This doxygen manual contains information about the algorithms and
-  data structures used in the code. Please refer to the `libairs.h'
+  data structures used in the code. Please refer to the `libiasi.h'
   documentation for a first overview.
   
   \section References
   
   For citing the model in scientific publications, please see
-  [CITATION.cff](https://github.com/slcs-jsc/airs/blob/master/CITATION.cff).
+  [CITATION.cff](https://github.com/slcs-jsc/iasi/blob/master/CITATION.cff).
   
   \section License
   
@@ -53,7 +53,7 @@
   Forschungszentrum Jülich, Germany.
   
   the IASI Code Collection is distributed under the terms of the
-  [GNU General Public License v3.0](https://github.com/slcs-jsc/airs/blob/master/COPYING).
+  [GNU General Public License v3.0](https://github.com/slcs-jsc/iasi/blob/master/COPYING).
   
   \section Contributing
   
@@ -61,10 +61,10 @@
   applications with the IASI Code Collection.
   
   You can submit bug reports or feature requests on the
-  [issue tracker](https://github.com/slcs-jsc/airs/issues).
+  [issue tracker](https://github.com/slcs-jsc/iasi/issues).
   
   Proposed code changes and fixes can be submitted as
-  [pull requests](https://github.com/slcs-jsc/airs/pulls).
+  [pull requests](https://github.com/slcs-jsc/iasi/pulls).
   
   Please do not hesitate to contact us if you have any questions or
   need assistance.

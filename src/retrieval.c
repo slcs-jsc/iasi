@@ -52,13 +52,13 @@
 /*! Across-track size of IASI radiance granule (don't change). */
 #define L1_NXTRACK 60
 
-/*! Number of AIRS pressure layers (don't change). */
+/*! Number of IASI pressure layers (don't change). */
 #define L2_NLAY 27
 
-/*! Maximum along-track size of AIRS retrieval granule (don't change). */
+/*! Maximum along-track size of IASI retrieval granule (don't change). */
 #define L2_NTRACK 1800
 
-/*! Across-track size of AIRS retrieval granule (don't change). */
+/*! Across-track size of IASI retrieval granule (don't change). */
 #define L2_NXTRACK 60
 
 /* ------------------------------------------------------------
