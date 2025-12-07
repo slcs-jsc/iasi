@@ -15,7 +15,7 @@ LIBDIR += -L ../libs/build/lib
 INCDIR += -I ../libs/build/include
 
 # Static compilation...
-STATIC ?= 1
+STATIC ?= 0
 
 # Optimization flags...
 OPT ?= -O3
