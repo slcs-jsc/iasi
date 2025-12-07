@@ -34,12 +34,14 @@ libraries, documentation, etc:
 
     cd iasi
 
-The GNU Scientific Library (https://www.gnu.org/software/gsl)
-is required for numerical calculations and the Unidata netCDF library
-(http://www.unidata.ucar.edu/software/netcdf) is needed for file-I/O.
-Furthermore, the CODA library (http://stcorp.nl/coda/) is required to read IASI data.
-Copies of these libraries can be found in the repository, if they are
-not available on your system. A script is provided to build the libraries:
+The [GNU Scientific Library](https://www.gnu.org/software/gsl) is
+required for numerical calculations and the
+[Unidata netCDF library](https://www.unidata.ucar.edu/software/netcdf)
+is needed for file-I/O. Furthermore, the
+[CODA library](https://atmospherictoolbox.org/coda)
+is required to read IASI data. Copies of these libraries can be found
+in the repository, if they are not available on your system. A script
+is provided to build the libraries:
 
     cd lib
     ./build.sh
