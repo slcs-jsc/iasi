@@ -47,8 +47,8 @@ cd $target/src/$dir \
 	|| exit
 
 # coda
-dir=coda-2.20
+dir=coda-2.25.1
 cd $target/src/$dir \
-    && ./configure --prefix=$target\
-    && make -j && make check && make install \
+    && ./bootstrap && ./configure --prefix=$target\
+    && make -j && make check && make install && make clean \
 	|| exit
