@@ -3,7 +3,7 @@
 # -----------------------------------------------------------------------------
 
 # Executables...
-EXC = bands extract noise perturbation spec2tab
+EXC = bands day2doy doy2day extract jsec2time noise perturbation spec2tab time2jsec
 
 # Installation directory...
 DESTDIR ?= ../bin
