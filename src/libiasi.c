@@ -174,6 +174,126 @@ void background_poly(
 
 /*****************************************************************************/
 
+void background_smooth(
+  wave_t *wave,
+  int npts_x,
+  int npts_y) {
+
+  const double dmax = 2500.0;
+
+  static double help[WX][WY];
+
+  /* Check parameters... */
+  if (npts_x <= 0 && npts_y <= 0)
+    return;
+
+  /* Smooth background... */
+  for (int ix = 0; ix < wave->nx; ix++)
+    for (int iy = 0; iy < wave->ny; iy++) {
+
+      /* Init... */
+      int n = 0;
+      help[ix][iy] = 0;
+
+      /* Set maximum range... */
+      const int dx = GSL_MIN(GSL_MIN(npts_x, ix), wave->nx - 1 - ix);
+      const int dy = GSL_MIN(GSL_MIN(npts_y, iy), wave->ny - 1 - iy);
+
+      /* Average... */
+      for (int i = ix - dx; i <= ix + dx; i++)
+	for (int j = iy - dy; j <= iy + dy; j++)
+	  if (fabs(wave->x[ix] - wave->x[i]) < dmax &&
+	      fabs(wave->y[iy] - wave->y[j]) < dmax) {
+	    help[ix][iy] += wave->bg[i][j];
+	    n++;
+	  }
+
+      /* Normalize... */
+      if (n > 0)
+	help[ix][iy] /= n;
+      else
+	help[ix][iy] = GSL_NAN;
+    }
+
+  /* Recalculate perturbations... */
+  for (int ix = 0; ix < wave->nx; ix++)
+    for (int iy = 0; iy < wave->ny; iy++) {
+      wave->bg[ix][iy] = help[ix][iy];
+      wave->pt[ix][iy] = wave->temp[ix][iy] - wave->bg[ix][iy];
+    }
+}
+
+/*****************************************************************************/
+
+void gauss(
+  wave_t *wave,
+  double fwhm) {
+
+  static double help[WX][WY];
+
+  /* Check parameters... */
+  if (fwhm <= 0)
+    return;
+
+  /* Compute sigma^2... */
+  const double sigma2 = gsl_pow_2(fwhm / 2.3548);
+
+  /* Loop over data points... */
+  for (int ix = 0; ix < wave->nx; ix++)
+    for (int iy = 0; iy < wave->ny; iy++) {
+
+      /* Init... */
+      double wsum = 0;
+      help[ix][iy] = 0;
+
+      /* Average... */
+      for (int ix2 = 0; ix2 < wave->nx; ix2++)
+	for (int iy2 = 0; iy2 < wave->ny; iy2++) {
+	  const double d2 = gsl_pow_2(wave->x[ix] - wave->x[ix2])
+	    + gsl_pow_2(wave->y[iy] - wave->y[iy2]);
+	  if (d2 <= 9 * sigma2) {
+	    const double w = exp(-d2 / (2 * sigma2));
+	    wsum += w;
+	    help[ix][iy] += w * wave->pt[ix2][iy2];
+	  }
+	}
+
+      /* Normalize... */
+      wave->pt[ix][iy] = help[ix][iy] / wsum;
+    }
+}
+
+/*****************************************************************************/
+
+void hamming(
+  wave_t *wave,
+  int niter) {
+
+  static double help[WX][WY];
+
+  /* Iterations... */
+  for (int iter = 0; iter < niter; iter++) {
+
+    /* Filter in x direction... */
+    for (int ix = 0; ix < wave->nx; ix++)
+      for (int iy = 0; iy < wave->ny; iy++)
+	help[ix][iy]
+	  = 0.23 * wave->pt[ix > 0 ? ix - 1 : ix][iy]
+	  + 0.54 * wave->pt[ix][iy]
+	  + 0.23 * wave->pt[ix < wave->nx - 1 ? ix + 1 : ix][iy];
+
+    /* Filter in y direction... */
+    for (int ix = 0; ix < wave->nx; ix++)
+      for (int iy = 0; iy < wave->ny; iy++)
+	wave->pt[ix][iy]
+	  = 0.23 * help[ix][iy > 0 ? iy - 1 : iy]
+	  + 0.54 * help[ix][iy]
+	  + 0.23 * help[ix][iy < wave->ny - 1 ? iy + 1 : iy];
+  }
+}
+
+/*****************************************************************************/
+
 void iasi_read(
   char *filename,
   iasi_rad_t *iasi_rad) {
@@ -393,6 +513,45 @@ void iasi_read(
 
 /*****************************************************************************/
 
+void median(
+  wave_t *wave,
+  int dx) {
+
+  static double data[WX * WY], help[WX][WY];
+
+  /* Check parameters... */
+  if (dx <= 0)
+    return;
+
+  /* Loop over data points... */
+  for (int ix = 0; ix < wave->nx; ix++)
+    for (int iy = 0; iy < wave->ny; iy++) {
+
+      /* Init... */
+      size_t n = 0;
+
+      /* Get data... */
+      for (int ix2 = GSL_MAX(ix - dx, 0);
+	   ix2 < GSL_MIN(ix + dx, wave->nx - 1); ix2++)
+	for (int iy2 = GSL_MAX(iy - dx, 0);
+	     iy2 < GSL_MIN(iy + dx, wave->ny - 1); iy2++) {
+	  data[n] = wave->pt[ix2][iy2];
+	  n++;
+	}
+
+      /* Normalize... */
+      gsl_sort(data, 1, n);
+      help[ix][iy] = gsl_stats_median_from_sorted_data(data, 1, n);
+    }
+
+  /* Loop over data points... */
+  for (int ix = 0; ix < wave->nx; ix++)
+    for (int iy = 0; iy < wave->ny; iy++)
+      wave->pt[ix][iy] = help[ix][iy];
+}
+
+/*****************************************************************************/
+
 void noise(
   wave_t *wave,
   double *mu,
@@ -510,6 +669,88 @@ void pert2wave(
       wave->var[ixtrack - xtrack0][itrack - track0]
 	= pert->var[itrack][ixtrack];
     }
+}
+
+/*****************************************************************************/
+
+void read_pert(
+  char *filename,
+  char *pertname,
+  pert_t *pert) {
+
+  static char varname[LEN];
+
+  static int dimid[2], ncid, varid;
+
+  static size_t ntrack, nxtrack, start[2] = { 0, 0 }, count[2] = { 1, 1 };
+
+  /* Write info... */
+  printf("Read perturbation data: %s\n", filename);
+
+  /* Open netCDF file... */
+  NC(nc_open(filename, NC_NOWRITE, &ncid));
+
+  /* Get dimensions... */
+  NC(nc_inq_dimid(ncid, "NTRACK", &dimid[0]));
+  NC(nc_inq_dimid(ncid, "NXTRACK", &dimid[1]));
+  NC(nc_inq_dimlen(ncid, dimid[0], &ntrack));
+  NC(nc_inq_dimlen(ncid, dimid[1], &nxtrack));
+  if (nxtrack > PERT_NXTRACK)
+    ERRMSG("Too many tracks!");
+  if (ntrack > PERT_NTRACK)
+    ERRMSG("Too many scans!");
+  pert->ntrack = (int) ntrack;
+  pert->nxtrack = (int) nxtrack;
+  count[1] = nxtrack;
+
+  /* Read data... */
+  NC(nc_inq_varid(ncid, "time", &varid));
+  for (size_t itrack = 0; itrack < ntrack; itrack++) {
+    start[0] = itrack;
+    NC(nc_get_vara_double(ncid, varid, start, count, pert->time[itrack]));
+  }
+
+  NC(nc_inq_varid(ncid, "lon", &varid));
+  for (size_t itrack = 0; itrack < ntrack; itrack++) {
+    start[0] = itrack;
+    NC(nc_get_vara_double(ncid, varid, start, count, pert->lon[itrack]));
+  }
+
+  NC(nc_inq_varid(ncid, "lat", &varid));
+  for (size_t itrack = 0; itrack < ntrack; itrack++) {
+    start[0] = itrack;
+    NC(nc_get_vara_double(ncid, varid, start, count, pert->lat[itrack]));
+  }
+
+  NC(nc_inq_varid(ncid, "bt_8mu", &varid));
+  for (size_t itrack = 0; itrack < ntrack; itrack++) {
+    start[0] = itrack;
+    NC(nc_get_vara_double(ncid, varid, start, count, pert->dc[itrack]));
+  }
+
+  sprintf(varname, "bt_%s", pertname);
+  NC(nc_inq_varid(ncid, varname, &varid));
+  for (size_t itrack = 0; itrack < ntrack; itrack++) {
+    start[0] = itrack;
+    NC(nc_get_vara_double(ncid, varid, start, count, pert->bt[itrack]));
+  }
+
+  sprintf(varname, "bt_%s_pt", pertname);
+  NC(nc_inq_varid(ncid, varname, &varid));
+  for (size_t itrack = 0; itrack < ntrack; itrack++) {
+    start[0] = itrack;
+    NC(nc_get_vara_double(ncid, varid, start, count, pert->pt[itrack]));
+  }
+
+  sprintf(varname, "bt_%s_var", pertname);
+  NC(nc_inq_varid(ncid, varname, &varid));
+  for (size_t itrack = 0; itrack < ntrack; itrack++) {
+    start[0] = itrack;
+    NC(nc_get_vara_double(ncid, varid, start, count, pert->var[itrack]));
+  }
+
+  /* Close file... */
+  NC(nc_close(ncid));
 }
 
 /*****************************************************************************/

@@ -385,14 +385,31 @@ void background_poly_help(
   int n,
   int dim);
 
-/*! Get closest channel for a wavenumber [cm] (uses expected min wavenumber).  */
-int get_chan_for_wavenumber(
-  float wavenumber);
+/*! Smooth background. */
+void background_smooth(
+  wave_t * wave,
+  int npts_x,
+  int npts_y);
+
+/*! Apply Gaussian filter to perturbations... */
+void gauss(
+  wave_t * wave,
+  double fwhm);
+
+/*! Apply Hamming filter to perturbations... */
+void hamming(
+  wave_t * wave,
+  int nit);
 
 /*! Read IASI Level-1 data and convert to radiation type. */
 void iasi_read(
   char *filename,
   iasi_rad_t * iasi_rad);
+
+/*! Apply median filter to perturbations... */
+void median(
+  wave_t * wave,
+  int dx);
 
 /*! Estimate noise. */
 void noise(
@@ -408,6 +425,12 @@ void pert2wave(
   int track1,
   int xtrack0,
   int xtrack1);
+
+/*! Read radiance perturbation data. */
+void read_pert(
+  char *filename,
+  char *pertname,
+  pert_t * pert);
 
 /*! Compute local variance. */
 void variance(

@@ -9,6 +9,7 @@ src/extract
 src/jurassic.o
 src/jsec2time
 src/libiasi.o
+src/map_pert
 src/noise
 src/perturbation
 src/retrieval
