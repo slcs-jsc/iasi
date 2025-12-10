@@ -1,7 +1,10 @@
 docs/docs/
 docs/site/
 libs/build/
-projects/
+projects/*
+!projects/example/
+projects/example/*.nc
+projects/example/*.tab
 src/bands
 src/day2doy
 src/doy2day
@@ -19,3 +22,4 @@ src/*.gcno
 src/*.gcda
 src/*.gcov
 src/coverage*
+tests/data/*.nat
