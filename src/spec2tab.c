@@ -38,8 +38,8 @@ int main(
   int ichan, track = -1, track2, xtrack = -1, xtrack2, format;
 
   /* Check arguments... */
-  if (argc < 6)
-    ERRMSG("Give parameters: <iasi_l1b_file> "
+  if (argc < 7)
+    ERRMSG("Give parameters: <ctl> <iasi_l1b_file> "
 	   "[index <track> <xtrack> | geo <lon> <lat>] <spec.tab>");
 
   /* Read control parameters... */
@@ -49,18 +49,18 @@ int main(
   ALLOC(iasi_rad, iasi_rad_t, 1);
 
   /* Read IASI data... */
-  printf("Read IASI Level-1C data file: %s\n", argv[1]);
-  iasi_read(format, argv[1], iasi_rad);
+  printf("Read IASI Level-1C data file: %s\n", argv[2]);
+  iasi_read(format, argv[2], iasi_rad);
 
   /* Get indices... */
-  if (argv[2][0] == 'i') {
-    track = atoi(argv[3]);
-    xtrack = atoi(argv[4]);
+  if (argv[3][0] == 'i') {
+    track = atoi(argv[4]);
+    xtrack = atoi(argv[5]);
   }
 
   /* Find nearest footprint... */
   else {
-    geo2cart(0, atof(argv[3]), atof(argv[4]), x0);
+    geo2cart(0, atof(argv[4]), atof(argv[5]), x0);
     for (track2 = 0; track2 < iasi_rad->ntrack; track2++)
       for (xtrack2 = 0; xtrack2 < L1_NXTRACK; xtrack2++) {
 	geo2cart(0, iasi_rad->Longitude[track2][xtrack2],
@@ -82,8 +82,8 @@ int main(
     ERRMSG("Across-track index out of range!");
 
   /* Create file... */
-  printf("Write spectrum: %s\n", argv[5]);
-  if (!(out = fopen(argv[5], "w")))
+  printf("Write spectrum: %s\n", argv[6]);
+  if (!(out = fopen(argv[6], "w")))
     ERRMSG("Cannot create file!");
 
   /* Write header... */
