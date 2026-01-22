@@ -99,8 +99,8 @@ int main(
   static size_t start[2], count[2];
 
   /* Check arguments... */
-  if (argc < 3)
-    ERRMSG("Give parameters: <out.nc> <l1b_file1> [<l1b_file2> ...]");
+  if (argc < 4)
+    ERRMSG("Give parameters: <ctl> <out.nc> <l1b_file1> [<l1b_file2> ...]");
 
   /* Read control parameters... */
   format = (int) scan_ctl(argc, argv, "FORMAT", -1, "1", NULL);
@@ -116,7 +116,7 @@ int main(
      ------------------------------------------------------------ */
 
   /* Loop over HDF files... */
-  for (iarg = 2; iarg < argc; iarg++) {
+  for (iarg = 3; iarg < argc; iarg++) {
 
     /* Read IASI data... */
     printf("Read IASI Level-1C data file: %s\n", argv[iarg]);
@@ -295,8 +295,8 @@ int main(
      ------------------------------------------------------------ */
 
   /* Create netCDF file... */
-  printf("Write perturbation data file: %s\n", argv[1]);
-  NC(nc_create(argv[1], NC_CLOBBER, &ncid));
+  printf("Write perturbation data file: %s\n", argv[2]);
+  NC(nc_create(argv[2], NC_CLOBBER, &ncid));
 
   /* Set dimensions... */
   NC(nc_def_dim(ncid, "NTRACK", NC_UNLIMITED, &dimid[0]));
