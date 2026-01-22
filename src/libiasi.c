@@ -15,7 +15,7 @@
   along with the IASI Code Collection. If not, see
   <http://www.gnu.org/licenses/>.
   
-  Copyright (C) 2019-2025 Forschungszentrum Juelich GmbH
+  Copyright (C) 2019-2026 Forschungszentrum Juelich GmbH
 */
 
 /*! 
@@ -295,6 +295,26 @@ void hamming(
 /*****************************************************************************/
 
 void iasi_read(
+  int format,
+  char *filename,
+  iasi_rad_t *iasi_rad) {
+
+  /* Read native file... */
+  if (format == 1)
+    iasi_read_native(filename, iasi_rad);
+
+  /* Read netCDF file... */
+  else if (format == 2)
+    iasi_read_netcdf(filename, iasi_rad);
+
+  /* Error... */
+  else
+    ERRMSG("Unknown IASI Level-1 data format!");
+}
+
+/*****************************************************************************/
+
+void iasi_read_native(
   char *filename,
   iasi_rad_t *iasi_rad) {
 
@@ -509,6 +529,221 @@ void iasi_read(
 
   /* Free... */
   free(iasi_raw);
+}
+
+/*****************************************************************************/
+
+void iasi_read_netcdf(
+  char *filename,
+  iasi_rad_t *iasi_rad) {
+
+  int ncid = -1;
+  int dim_point_id = -1, dim_chan_id = -1;
+  size_t npoint = 0, nchan = 0;
+
+  int var_lat = -1, var_lon = -1, var_date = -1;
+  int var_scan = -1, var_pixel = -1, var_fov = -1;
+  int var_channame = -1, var_R = -1;
+
+  int *channel_name = NULL;
+
+  /* Determine scan range (absolute indices like 297..431) */
+  int scan_min = 2147483647, scan_max = (-2147483647 - 1);
+
+  const size_t block = 4096;	/* points per chunk */
+  size_t start1[1], count1[1];
+  size_t start2[2], count2[2];
+
+  int *scan_buf = NULL, *pixel_buf = NULL, *fov_buf = NULL;
+  double *lat_buf = NULL, *lon_buf = NULL, *date_buf = NULL;
+  float *R_buf = NULL;
+
+  if (filename == NULL || iasi_rad == NULL)
+    ERRMSG("iasi_read_netcdf(): NULL argument.");
+
+  /* Fill standard IASI wavenumber grid for full IASI_L1_NCHAN */
+  for (int ichan = 0; ichan < IASI_L1_NCHAN; ichan++)
+    iasi_rad->freq[ichan] = 644.75 + (double) (ichan + 1) * 0.25;
+
+  /* Open and locate dims/vars */
+  NC(nc_open(filename, NC_NOWRITE, &ncid));
+
+  NC(nc_inq_dimid(ncid, "point", &dim_point_id));
+  NC(nc_inq_dimlen(ncid, dim_point_id, &npoint));
+
+  NC(nc_inq_dimid(ncid, "channel", &dim_chan_id));
+  NC(nc_inq_dimlen(ncid, dim_chan_id, &nchan));
+
+  NC(nc_inq_varid(ncid, "lat", &var_lat));
+  NC(nc_inq_varid(ncid, "lon", &var_lon));
+  NC(nc_inq_varid(ncid, "date", &var_date));
+  NC(nc_inq_varid(ncid, "scan", &var_scan));
+  NC(nc_inq_varid(ncid, "pixel", &var_pixel));
+  NC(nc_inq_varid(ncid, "fov", &var_fov));
+  NC(nc_inq_varid(ncid, "channel_name", &var_channame));
+  NC(nc_inq_varid(ncid, "R", &var_R));
+
+  /* Read channel mapping */
+  ALLOC(channel_name, int,
+	  (int) nchan);
+  NC(nc_get_var_int(ncid, var_channame, channel_name));
+
+  /* Allocate chunk buffers */
+  ALLOC(scan_buf, int,
+	  (int) block);
+  ALLOC(pixel_buf, int,
+	  (int) block);
+  ALLOC(fov_buf, int,
+	  (int) block);
+
+  ALLOC(lat_buf, double,
+	  (int) block);
+  ALLOC(lon_buf, double,
+	  (int) block);
+  ALLOC(date_buf, double,
+	  (int) block);
+
+  /* R is (point, channel) */
+  ALLOC(R_buf, float,
+	  (int) (block * nchan));
+
+  /* ---------- Pass 1: scan_min/scan_max ---------- */
+  for (size_t p0 = 0; p0 < npoint; p0 += block) {
+    size_t nread = (p0 + block <= npoint) ? block : (npoint - p0);
+
+    start1[0] = p0;
+    count1[0] = nread;
+    NC(nc_get_vara_int(ncid, var_scan, start1, count1, scan_buf));
+
+    for (size_t i = 0; i < nread; i++) {
+      if (scan_buf[i] < scan_min)
+	scan_min = scan_buf[i];
+      if (scan_buf[i] > scan_max)
+	scan_max = scan_buf[i];
+    }
+  }
+
+  if (scan_min > scan_max)
+    ERRMSG("iasi_read_netcdf(): could not determine scan range.");
+
+  /* ntrack = 2 * number_of_scans (same as iasi_read()) */
+  {
+    int nscan = (scan_max - scan_min + 1);
+    int ntrack = nscan * 2;
+    if (ntrack < 0)
+      ntrack = 0;
+    if (ntrack > L1_NTRACK)
+      ntrack = L1_NTRACK;
+    iasi_rad->ntrack = ntrack;
+  }
+
+  /* No satellite position variables in this netCDF format */
+  for (int tr = 0; tr < iasi_rad->ntrack; tr++) {
+    iasi_rad->Sat_z[tr] = GSL_NAN;
+    iasi_rad->Sat_lon[tr] = GSL_NAN;
+    iasi_rad->Sat_lat[tr] = GSL_NAN;
+  }
+
+  /* ---------- Pass 2: read data and fill iasi_rad ---------- */
+  for (size_t p0 = 0; p0 < npoint; p0 += block) {
+    size_t nread = (p0 + block <= npoint) ? block : (npoint - p0);
+
+    start1[0] = p0;
+    count1[0] = nread;
+    NC(nc_get_vara_double(ncid, var_lat, start1, count1, lat_buf));
+    NC(nc_get_vara_double(ncid, var_lon, start1, count1, lon_buf));
+    NC(nc_get_vara_double(ncid, var_date, start1, count1, date_buf));
+    NC(nc_get_vara_int(ncid, var_scan, start1, count1, scan_buf));
+    NC(nc_get_vara_int(ncid, var_pixel, start1, count1, pixel_buf));
+    NC(nc_get_vara_int(ncid, var_fov, start1, count1, fov_buf));
+
+    start2[0] = p0;
+    start2[1] = 0;
+    count2[0] = nread;
+    count2[1] = nchan;
+    NC(nc_get_vara_float(ncid, var_R, start2, count2, R_buf));
+
+    for (size_t i = 0; i < nread; i++) {
+
+      /* Normalize scan to 0..nscan-1 */
+      int scan_idx = scan_buf[i] - scan_min;
+      if (scan_idx < 0)
+	continue;
+
+      /* fov is 1..120 (given) */
+      int f = fov_buf[i];
+      if (f < 1 || f > 120)
+	continue;
+
+      /* Interpret fov as 30 positions x 4 sub-pixels */
+      int pos = (f - 1) / 4;	/* 0..29 */
+      int sub = (f - 1) % 4;	/* 0..3 */
+
+      if (pos < 0 || pos >= IASI_NXTRACK)
+	continue;
+
+      /* Optional sanity check: pixel is 1..4 */
+      /* int pix = pixel_buf[i];
+         if (pix < 1 || pix > 4) continue; */
+
+      /* Reproduce the exact iasi_read() ordering:
+         tr1_lpm=3, tr1_rpm=0, tr2_lpm=2, tr2_rpm=1 */
+      int track_add, x_add;
+      switch (sub) {
+      case 3:
+	track_add = 0;
+	x_add = 0;
+	break;			/* tr1_lpm */
+      case 0:
+	track_add = 0;
+	x_add = 1;
+	break;			/* tr1_rpm */
+      case 2:
+	track_add = 1;
+	x_add = 0;
+	break;			/* tr2_lpm */
+      case 1:
+	track_add = 1;
+	x_add = 1;
+	break;			/* tr2_rpm */
+      default:
+	continue;
+      }
+
+      int tr = 2 * scan_idx + track_add;
+      int ix = 2 * pos + x_add;
+
+      if (tr < 0 || tr >= L1_NTRACK)
+	continue;
+      if (ix < 0 || ix >= L1_NXTRACK)
+	continue;
+
+      iasi_rad->Time[tr][ix] = date_buf[i];
+      iasi_rad->Longitude[tr][ix] = lon_buf[i];
+      iasi_rad->Latitude[tr][ix] = lat_buf[i];
+
+      /* Fill radiances for provided channels into global index = channel_name-1 */
+      float *row = &R_buf[i * nchan];
+      for (size_t k = 0; k < nchan; k++) {
+	int chan_num = channel_name[k];	/* 1-based */
+	int g = chan_num - 1;	/* 0-based */
+	if (g >= 0 && g < IASI_L1_NCHAN)
+	  iasi_rad->Rad[tr][ix][g] = 100.0f * row[k];
+      }
+    }
+  }
+
+  /* Cleanup */
+  if (ncid >= 0)
+    NC(nc_close(ncid));
+  free(channel_name);
+  free(scan_buf);
+  free(pixel_buf);
+  free(fov_buf);
+  free(lat_buf);
+  free(lon_buf);
+  free(date_buf);
+  free(R_buf);
 }
 
 /*****************************************************************************/
@@ -772,11 +1007,11 @@ void variance(
 
   /* Get sampling distances... */
   dx =
-    (int) (dh / fabs(wave->x[wave->nx - 1] - wave->x[0]) * (wave->nx - 1.0) +
-	   1);
+    (int) (dh / fabs(wave->x[wave->nx - 1] - wave->x[0]) *
+	   (wave->nx - 1.0) + 1);
   dy =
-    (int) (dh / fabs(wave->y[wave->ny - 1] - wave->y[0]) * (wave->ny - 1.0) +
-	   1);
+    (int) (dh / fabs(wave->y[wave->ny - 1] - wave->y[0]) *
+	   (wave->ny - 1.0) + 1);
 
   /* Loop over data points... */
   for (ix = 0; ix < wave->nx; ix++)
@@ -789,8 +1024,8 @@ void variance(
       /* Get data... */
       for (ix2 = GSL_MAX(ix - dx, 0); ix2 <= GSL_MIN(ix + dx, wave->nx - 1);
 	   ix2++)
-	for (iy2 = GSL_MAX(iy - dy, 0); iy2 <= GSL_MIN(iy + dy, wave->ny - 1);
-	     iy2++)
+	for (iy2 = GSL_MAX(iy - dy, 0);
+	     iy2 <= GSL_MIN(iy + dy, wave->ny - 1); iy2++)
 	  if ((gsl_pow_2(wave->x[ix] - wave->x[ix2])
 	       + gsl_pow_2(wave->y[iy] - wave->y[iy2])) <= dh2)
 	    if (gsl_finite(wave->pt[ix2][iy2])) {

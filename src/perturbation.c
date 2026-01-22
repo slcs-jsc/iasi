@@ -15,7 +15,7 @@
   along with the IASI Code Collection. If not, see
   <http://www.gnu.org/licenses/>.
   
-  Copyright (C) 2019-2025 Forschungszentrum Juelich GmbH
+  Copyright (C) 2019-2026 Forschungszentrum Juelich GmbH
 */
 
 /*! 
@@ -94,13 +94,16 @@ int main(
     time_varid, lon_varid, lat_varid, bt_4mu_varid, bt_4mu_pt_varid,
     bt_4mu_var_varid, bt_8mu_varid, bt_15mu_low_varid, bt_15mu_low_pt_varid,
     bt_15mu_low_var_varid, bt_15mu_high_varid, bt_15mu_high_pt_varid,
-    bt_15mu_high_var_varid, iarg;
+    bt_15mu_high_var_varid, iarg, format;
 
   static size_t start[2], count[2];
 
   /* Check arguments... */
   if (argc < 3)
     ERRMSG("Give parameters: <out.nc> <l1b_file1> [<l1b_file2> ...]");
+
+  /* Read control parameters... */
+  format = (int) scan_ctl(argc, argv, "FORMAT", -1, "1", NULL);
 
   /* Allocate... */
   ALLOC(iasi_rad, iasi_rad_t, 1);
@@ -117,7 +120,7 @@ int main(
 
     /* Read IASI data... */
     printf("Read IASI Level-1C data file: %s\n", argv[iarg]);
-    iasi_read(argv[iarg], iasi_rad);
+    iasi_read(format, argv[iarg], iasi_rad);
 
     /* Save geolocation... */
     pert_4mu->ntrack += iasi_rad->ntrack;

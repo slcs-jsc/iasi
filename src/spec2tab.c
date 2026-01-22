@@ -15,7 +15,7 @@
   along with the IASI Code Collection. If not, see
   <http://www.gnu.org/licenses/>.
   
-  Copyright (C) 2019-2025 Forschungszentrum Juelich GmbH
+  Copyright (C) 2019-2026 Forschungszentrum Juelich GmbH
 */
 
 /*! 
@@ -35,19 +35,22 @@ int main(
 
   double dmin = 1e100, x0[3], x1[3];
 
-  int ichan, track = -1, track2, xtrack = -1, xtrack2;
+  int ichan, track = -1, track2, xtrack = -1, xtrack2, format;
 
   /* Check arguments... */
-  if (argc != 6)
+  if (argc < 6)
     ERRMSG("Give parameters: <iasi_l1b_file> "
 	   "[index <track> <xtrack> | geo <lon> <lat>] <spec.tab>");
+
+  /* Read control parameters... */
+  format = (int) scan_ctl(argc, argv, "FORMAT", -1, "1", NULL);
 
   /* Allocate... */
   ALLOC(iasi_rad, iasi_rad_t, 1);
 
   /* Read IASI data... */
   printf("Read IASI Level-1C data file: %s\n", argv[1]);
-  iasi_read(argv[1], iasi_rad);
+  iasi_read(format, argv[1], iasi_rad);
 
   /* Get indices... */
   if (argv[2][0] == 'i') {

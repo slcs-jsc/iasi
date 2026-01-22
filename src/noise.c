@@ -15,7 +15,7 @@
   along with the IASI Code Collection. If not, see
   <http://www.gnu.org/licenses/>.
   
-  Copyright (C) 2019-2025 Forschungszentrum Juelich GmbH
+  Copyright (C) 2019-2026 Forschungszentrum Juelich GmbH
 */
 
 /*! 
@@ -37,18 +37,21 @@ int main(
 
   static double mu, nesr, sigma;
 
-  static int ichan, itrack, ix, iy;
+  static int ichan, itrack, ix, iy, format;
 
   /* Check arguments... */
   if (argc < 4)
     ERRMSG("Give parameters: <ctl> <iasi_l1_file> <noise.tab>");
+
+  /* Read control parameters... */
+  format = (int) scan_ctl(argc, argv, "FORMAT", -1, "1", NULL);
 
   /* Allocate... */
   ALLOC(iasi_rad, iasi_rad_t, 1);
 
   /* Read IASI data... */
   printf("Read IASI data: %s\n", argv[2]);
-  iasi_read(argv[2], iasi_rad);
+  iasi_read(format, argv[2], iasi_rad);
 
   /* Create file... */
   printf("Write noise data: %s\n", argv[3]);

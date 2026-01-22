@@ -211,10 +211,10 @@ int main(
   read_ctl(argc, argv, &ctl);
   read_ret(argc, argv, &ctl, &ret);
   debug = (int) scan_ctl(argc, argv, "DEBUG", -1, "1", NULL);
-  
+
   /* Initialize look-up tables... */
   tbl_t *tbl = read_tbl(&ctl);
-  
+
   /* Read retrieval grid... */
   nz = (int) scan_ctl(argc, argv, "NZ", -1, "", NULL);
   if (nz > NP)
@@ -316,7 +316,7 @@ int main(
 	obs_meas.vplat[0] = ncd.l1_lat[track][xtrack];
 	for (id = 0; id < ctl.nd; id++)
 	  obs_meas.rad[id][0] = ncd.l1_rad[track][xtrack][channel[id]];
-	
+
 	/* Flag out 4 micron channels for daytime measurements... */
 	if (RAD2DEG(acos(cos_sza(obs_meas.time[0], obs_meas.obslon[0],
 				 obs_meas.obslat[0]))) < sza_thresh)

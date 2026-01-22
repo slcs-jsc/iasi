@@ -15,7 +15,7 @@
   along with the IASI Code Collection. If not, see
   <http://www.gnu.org/licenses/>.
   
-  Copyright (C) 2019-2025 Forschungszentrum Juelich GmbH
+  Copyright (C) 2019-2026 Forschungszentrum Juelich GmbH
 */
 
 /*! 
@@ -275,7 +275,7 @@ int main(
 
   double ts;
 
-  int ichan, lay, track = 0, xtrack;
+  int ichan, lay, track = 0, xtrack, format;
 
   /* Check arguments... */
   if (argc < 4)
@@ -288,9 +288,10 @@ int main(
 
   /* Read control parameters... */
   read_ctl2(argc, argv, &ctl2);
+  format = (int) scan_ctl(argc, argv, "FORMAT", -1, "1", NULL);
 
   /* Read IASI data... */
-  iasi_read(argv[2], iasi_rad);
+  iasi_read(format, argv[2], iasi_rad);
 
   /* Copy data to struct... */
   l1.ntrack = (size_t) iasi_rad->ntrack;

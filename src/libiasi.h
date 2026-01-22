@@ -15,7 +15,7 @@
   along with the IASI Code Collection. If not, see
   <http://www.gnu.org/licenses/>.
   
-  Copyright (C) 2019-2025 Forschungszentrum Juelich GmbH
+  Copyright (C) 2019-2026 Forschungszentrum Juelich GmbH
 */
 
 /*! 
@@ -401,8 +401,19 @@ void hamming(
   wave_t * wave,
   int nit);
 
-/*! Read IASI Level-1 data and convert to radiation type. */
+/*! Read IASI Level-1 data. */
 void iasi_read(
+  int format,
+  char *filename,
+  iasi_rad_t * iasi_rad);
+
+/*! Read IASI Level-1 data from native file. */
+void iasi_read_native(
+  char *filename,
+  iasi_rad_t * iasi_rad);
+
+/*! Read IASI Level-1 data from netCDF file. */
+void iasi_read_netcdf(
   char *filename,
   iasi_rad_t * iasi_rad);
 
