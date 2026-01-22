@@ -668,6 +668,12 @@ void iasi_read_netcdf(
   /* ntrack = 2 * number of unique scanlines */
   iasi_rad->ntrack = (int) (2 * nuniq);
 
+  /* Initialize radiances with NaN (for missing pixels)... */
+  for (int tr = 0; tr < iasi_rad->ntrack; tr++)
+    for (int ix = 0; ix < L1_NXTRACK; ix++)
+      for (int g = 0; g < IASI_L1_NCHAN; g++)
+	iasi_rad->Rad[tr][ix][g] = GSL_NAN;
+
   /* No satellite position info... */
   for (int tr = 0; tr < iasi_rad->ntrack; tr++) {
     iasi_rad->Sat_z[tr] = GSL_NAN;
