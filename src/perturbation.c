@@ -65,7 +65,7 @@ int main(
 
   static double numean, radmean, var_dh = 100.;
 
-  static int list_4mu[N4]
+  const int list_4mu[N4]
     = { 6711, 6712, 6713, 6714, 6715, 6716, 6717, 6718, 6719, 6720,
     6721, 6722, 6723, 6724, 6725, 6726, 6727, 6728, 6729, 6730, 6731,
     6732, 6733, 6734, 6735, 6736, 6737, 6738, 6739, 6740, 6741, 6742,
@@ -82,19 +82,21 @@ int main(
     6878, 6879, 6880, 6881, 6882, 6883, 6884, 6885, 6886, 6887
   };
 
-  static int list_15mu_low[N15_LOW]
+  const int list_15mu_low[N15_LOW]
     = { 22, 28, 34, 40, 46, 52, 58, 72, 100, 105, 112, 118, 119,
     124, 125, 130, 131, 136, 137, 143, 144
   };
 
-  static int list_15mu_high[N15_HIGH]
+  const int list_15mu_high[N15_HIGH]
   = { 91, 92 };
+
+  const int cloud_chan = 2364;
 
   static int ix, iy, dimid[2], i, n, ncid, track, track0, xtrack,
     time_varid, lon_varid, lat_varid, bt_4mu_varid, bt_4mu_pt_varid,
     bt_4mu_var_varid, bt_8mu_varid, bt_15mu_low_varid, bt_15mu_low_pt_varid,
     bt_15mu_low_var_varid, bt_15mu_high_varid, bt_15mu_high_pt_varid,
-    bt_15mu_high_var_varid, iarg, format;
+    bt_15mu_high_var_varid, iarg, format, init;
 
   static size_t start[2], count[2];
 
@@ -115,12 +117,32 @@ int main(
      Read HDF files...
      ------------------------------------------------------------ */
 
-  /* Loop over HDF files... */
+  /* Loop over IASI files... */
   for (iarg = 3; iarg < argc; iarg++) {
 
     /* Read IASI data... */
     printf("Read IASI Level-1C data file: %s\n", argv[iarg]);
     iasi_read(format, argv[iarg], iasi_rad);
+
+    /* Write info... */
+    if (!init) {
+      init = 1;
+      LOG(2, "4 micron channels:");
+      for (i = 0; i < N4; i++)
+	LOG(2, "  channel[%4d]= %4d | freq[%4d]= %7.2f cm^-1", i, list_4mu[i],
+	    i, iasi_rad->freq[list_4mu[i]]);
+      LOG(2, "15 micron low channels:");
+      for (i = 0; i < N15_LOW; i++)
+	LOG(2, "  channel[%4d]= %4d | freq[%4d]= %7.2f cm^-1", i,
+	    list_15mu_low[i], i, iasi_rad->freq[list_15mu_low[i]]);
+      LOG(2, "15 micron high channels:");
+      for (i = 0; i < N15_HIGH; i++)
+	LOG(2, "  channel[%4d]= %4d | freq[%4d]= %7.2f cm^-1", i,
+	    list_15mu_high[i], i, iasi_rad->freq[list_15mu_high[i]]);
+      LOG(2, "cloud channel:");
+      LOG(2, "  channel[%4d]= %4d | freq[%4d]= %7.2f cm^-1", 0, cloud_chan, 0,
+	  iasi_rad->freq[cloud_chan]);
+    }
 
     /* Save geolocation... */
     pert_4mu->ntrack += iasi_rad->ntrack;
@@ -175,7 +197,8 @@ int main(
     for (track = 0; track < iasi_rad->ntrack; track++)
       for (xtrack = 0; xtrack < L1_NXTRACK; xtrack++)
 	pert_4mu->dc[track0 + track][xtrack]
-	  = BRIGHT(iasi_rad->Rad[track][xtrack][2345], iasi_rad->freq[2345]);
+	  = BRIGHT(iasi_rad->Rad[track][xtrack][cloud_chan],
+		   iasi_rad->freq[cloud_chan]);
 
     /* Get 4.3 micron brightness temperature... */
     for (track = 0; track < iasi_rad->ntrack; track++)

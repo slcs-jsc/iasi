@@ -596,10 +596,15 @@ void iasi_read_netcdf(
   /* Get dimensions... */
   NC(nc_inq_dimid(ncid, "point", &dim_point_id));
   NC(nc_inq_dimlen(ncid, dim_point_id, &npoint));
+  LOG(2, "number of points: %lu", npoint);
   NC(nc_inq_dimid(ncid, "channel", &dim_chan_id));
   NC(nc_inq_dimlen(ncid, dim_chan_id, &nchan));
-  if (npoint == 0 || nchan == 0)
-    ERRMSG("Empty file, npoint and/or nchan is zero!");
+  LOG(2, "number of channels: %lu", nchan);
+  if (npoint == 0 || nchan == 0) {
+    WARN("Empty file, npoint and/or nchan is zero!");
+    NC(nc_close(ncid));
+    return;
+  }
 
   /* Get variables... */
   NC(nc_inq_varid(ncid, "lat", &var_lat));
@@ -616,6 +621,9 @@ void iasi_read_netcdf(
   ALLOC(channel_name, int,
 	nchan);
   NC(nc_get_var_int(ncid, var_channame, channel_name));
+  LOG(2, "channels: name= %d ... %d | freq= %g ... %g cm^-1", channel_name[0],
+      channel_name[nchan - 1], iasi_rad->freq[channel_name[0] - 1],
+      iasi_rad->freq[channel_name[nchan - 1] - 1]);
 
   /* Allocate full arrays... */
   ALLOC(orbit_all, int,
@@ -674,7 +682,15 @@ void iasi_read_netcdf(
       for (int g = 0; g < IASI_L1_NCHAN; g++)
 	iasi_rad->Rad[tr][ix][g] = GSL_NAN;
 
-  /* No satellite position info... */
+  /* Initialize footprint time and location with NaN... */
+  for (int track = 0; track < iasi_rad->ntrack; track++)
+    for (int xtrack = 0; xtrack < L1_NXTRACK; xtrack++) {
+      iasi_rad->Time[track][xtrack] = GSL_NAN;
+      iasi_rad->Longitude[track][xtrack] = GSL_NAN;
+      iasi_rad->Latitude[track][xtrack] = GSL_NAN;
+    }
+
+  /* No satellite position info, set to NaN... */
   for (int tr = 0; tr < iasi_rad->ntrack; tr++) {
     iasi_rad->Sat_z[tr] = GSL_NAN;
     iasi_rad->Sat_lon[tr] = GSL_NAN;
@@ -749,6 +765,22 @@ void iasi_read_netcdf(
 
   /* Close file... */
   NC(nc_close(ncid));
+
+  /* Check time... */
+  double tmin = 1e100, tmax = -1e100;
+  for (int track = 0; track < iasi_rad->ntrack; track++)
+    for (int xtrack = 0; xtrack < L1_NXTRACK; xtrack++) {
+      if (gsl_finite(iasi_rad->Time[track][xtrack])) {
+	tmin = GSL_MIN(tmin, iasi_rad->Time[track][xtrack]);
+	tmax = GSL_MAX(tmax, iasi_rad->Time[track][xtrack]);
+      }
+      if (gsl_finite(iasi_rad->Time[track][xtrack])
+	  && gsl_finite(iasi_rad->Time[track - 1][xtrack])
+	  && iasi_rad->Time[track][xtrack] <
+	  iasi_rad->Time[track - 1][xtrack])
+	ERRMSG("Time is not ascending!");
+    }
+  LOG(2, "time= %.2f ... %.2f s", tmin, tmax);
 
   /* Free... */
   free(channel_name);
