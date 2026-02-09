@@ -908,33 +908,71 @@ void pert2wave(
   if (wave->ny > WY)
     ERRMSG("Too many along-track values!");
 
+  /* ------------------------------------------------------------------------- */
+  /* Compute wave->x[] and wave->y[] as mean step sizes over the whole window, */
+  /* ignoring any lon/lat pairs that contain NaNs (or non-finite values).      */
+  /* ------------------------------------------------------------------------- */
+
+  wave->x[0] = 0.0;
+  for (ixtrack = xtrack0 + 1; ixtrack <= xtrack1; ixtrack++) {
+
+    double sum = 0.0;
+    int n = 0;
+
+    /* mean distance between columns (ixtrack-1) and (ixtrack), averaged over all rows */
+    for (itrack = track0; itrack <= track1; itrack++) {
+
+      double lon0 = pert->lon[itrack][ixtrack - 1];
+      double lat0 = pert->lat[itrack][ixtrack - 1];
+      double lon1 = pert->lon[itrack][ixtrack];
+      double lat1 = pert->lat[itrack][ixtrack];
+
+      if (!isfinite(lon0) || !isfinite(lat0) || !isfinite(lon1)
+	  || !isfinite(lat1))
+	continue;
+
+      geo2cart(0, lon0, lat0, x0);
+      geo2cart(0, lon1, lat1, x1);
+      sum += DIST(x0, x1);
+      n++;
+    }
+
+    /* If no valid pairs exist for this step, add 0 (keeps x finite/monotonic). */
+    wave->x[ixtrack - xtrack0] =
+      wave->x[ixtrack - xtrack0 - 1] + ((n > 0) ? (sum / (double) n) : 0.0);
+  }
+
+  wave->y[0] = 0.0;
+  for (itrack = track0 + 1; itrack <= track1; itrack++) {
+
+    double sum = 0.0;
+    int n = 0;
+
+    /* mean distance between rows (itrack-1) and (itrack), averaged over all columns */
+    for (ixtrack = xtrack0; ixtrack <= xtrack1; ixtrack++) {
+
+      double lon0 = pert->lon[itrack - 1][ixtrack];
+      double lat0 = pert->lat[itrack - 1][ixtrack];
+      double lon1 = pert->lon[itrack][ixtrack];
+      double lat1 = pert->lat[itrack][ixtrack];
+
+      if (!isfinite(lon0) || !isfinite(lat0) || !isfinite(lon1)
+	  || !isfinite(lat1))
+	continue;
+
+      geo2cart(0, lon0, lat0, x0);
+      geo2cart(0, lon1, lat1, x1);
+      sum += DIST(x0, x1);
+      n++;
+    }
+
+    wave->y[itrack - track0] =
+      wave->y[itrack - track0 - 1] + ((n > 0) ? (sum / (double) n) : 0.0);
+  }
+
   /* Loop over footprints... */
   for (itrack = track0; itrack <= track1; itrack++)
     for (ixtrack = xtrack0; ixtrack <= xtrack1; ixtrack++) {
-
-      /* Get distances... */
-      if (itrack == track0) {
-	wave->x[0] = 0;
-	if (ixtrack > xtrack0) {
-	  geo2cart(0, pert->lon[itrack][ixtrack - 1],
-		   pert->lat[itrack][ixtrack - 1], x0);
-	  geo2cart(0, pert->lon[itrack][ixtrack],
-		   pert->lat[itrack][ixtrack], x1);
-	  wave->x[ixtrack - xtrack0] =
-	    wave->x[ixtrack - xtrack0 - 1] + DIST(x0, x1);
-	}
-      }
-      if (ixtrack == xtrack0) {
-	wave->y[0] = 0;
-	if (itrack > track0) {
-	  geo2cart(0, pert->lon[itrack - 1][ixtrack],
-		   pert->lat[itrack - 1][ixtrack], x0);
-	  geo2cart(0, pert->lon[itrack][ixtrack],
-		   pert->lat[itrack][ixtrack], x1);
-	  wave->y[itrack - track0] =
-	    wave->y[itrack - track0 - 1] + DIST(x0, x1);
-	}
-      }
 
       /* Save geolocation... */
       wave->time = pert->time[(track0 + track1) / 2][(xtrack0 + xtrack1) / 2];
@@ -970,7 +1008,7 @@ void read_pert(
   static size_t ntrack, nxtrack, start[2] = { 0, 0 }, count[2] = { 1, 1 };
 
   /* Write info... */
-  printf("Read perturbation data: %s\n", filename);
+  LOG(1, "Read perturbation data: %s", filename);
 
   /* Open netCDF file... */
   NC(nc_open(filename, NC_NOWRITE, &ncid));
@@ -1118,7 +1156,7 @@ void write_l1(
     sat_z_id, sat_lon_id, sat_lat_id, nu_id, rad_id;
 
   /* Open or create netCDF file... */
-  printf("Write IASI Level-1 file: %s\n", filename);
+  LOG(1, "Write IASI Level-1 file: %s", filename);
   if (nc_open(filename, NC_WRITE, &ncid) != NC_NOERR) {
     NC(nc_create(filename, NC_CLOBBER, &ncid));
   } else {
@@ -1175,7 +1213,7 @@ void write_l2(
   int dimid[10], ncid, time_id, z_id, lon_id, lat_id, p_id, t_id;
 
   /* Create netCDF file... */
-  printf("Write IASI Level-2 file: %s\n", filename);
+  LOG(1, "Write IASI Level-2 file: %s", filename);
   if (nc_open(filename, NC_WRITE, &ncid) != NC_NOERR) {
     NC(nc_create(filename, NC_CLOBBER, &ncid));
   } else {
