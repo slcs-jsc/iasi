@@ -561,7 +561,7 @@ void iasi_read_netcdf(
   int ncid = -1, dim_point_id = -1, dim_chan_id = -1, var_lat = -1,
     var_lon = -1, var_date = -1, var_orbit = -1, var_scan = -1,
     var_pixel = -1, var_fov = -1, var_channame = -1, var_R = -1,
-    *channel_name = NULL;
+    var_qualflag = -1, *channel_name = NULL;
 
   size_t npoint = 0, nchan = 0;
 
@@ -574,6 +574,7 @@ void iasi_read_netcdf(
   double *lon_all = NULL;
   double *date_all = NULL;
   float *R_all = NULL;
+  int *qualflag_all = NULL;
 
   /* Scanline keys... */
   orbit_scan_t *keys_all = NULL;	/* length npoint */
@@ -616,6 +617,7 @@ void iasi_read_netcdf(
   NC(nc_inq_varid(ncid, "fov", &var_fov));
   NC(nc_inq_varid(ncid, "channel_name", &var_channame));
   NC(nc_inq_varid(ncid, "R", &var_R));
+  NC(nc_inq_varid(ncid, "qualflag", &var_qualflag));
 
   /* Channel mapping... */
   ALLOC(channel_name, int,
@@ -642,6 +644,8 @@ void iasi_read_netcdf(
 	npoint);
   ALLOC(R_all, float,
 	npoint * nchan);
+  ALLOC(qualflag_all, int,
+	npoint);
 
   /* Read everything... */
   NC(nc_get_var_int(ncid, var_orbit, orbit_all));
@@ -652,6 +656,7 @@ void iasi_read_netcdf(
   NC(nc_get_var_double(ncid, var_lon, lon_all));
   NC(nc_get_var_double(ncid, var_date, date_all));
   NC(nc_get_var_float(ncid, var_R, R_all));
+  NC(nc_get_var_int(ncid, var_qualflag, qualflag_all));
 
   /* Build list of (orbit,scan) keys for each point... */
   ALLOC(keys_all, orbit_scan_t, npoint);
@@ -756,8 +761,10 @@ void iasi_read_netcdf(
     iasi_rad->Longitude[tr][ix] = lon_all[i];
     iasi_rad->Latitude[tr][ix] = lat_all[i];
     float *row = &R_all[i * nchan];
+    if (qualflag_all[i] != 0)
+      continue;			// keep NaNs for this point
     for (size_t k = 0; k < nchan; k++) {
-      int g = channel_name[k] - 1;
+      const int g = channel_name[k] - 1;
       if (g >= 0 && g < IASI_L1_NCHAN)
 	iasi_rad->Rad[tr][ix][g] = 100.0f * row[k];	/* m^-1 -> cm^-1 */
     }
@@ -774,7 +781,7 @@ void iasi_read_netcdf(
 	tmin = GSL_MIN(tmin, iasi_rad->Time[track][xtrack]);
 	tmax = GSL_MAX(tmax, iasi_rad->Time[track][xtrack]);
       }
-      if (gsl_finite(iasi_rad->Time[track][xtrack])
+      if (track > 0 && gsl_finite(iasi_rad->Time[track][xtrack])
 	  && gsl_finite(iasi_rad->Time[track - 1][xtrack])
 	  && iasi_rad->Time[track][xtrack] <
 	  iasi_rad->Time[track - 1][xtrack])
@@ -792,6 +799,7 @@ void iasi_read_netcdf(
   free(lon_all);
   free(date_all);
   free(R_all);
+  free(qualflag_all);
   free(keys_all);
   free(keys_uniq);
 }
