@@ -258,6 +258,11 @@ int main(
     track0 += iasi_rad->ntrack;
   }
 
+  /* Check track counters... */
+  if (pert_4mu->ntrack <= 0
+      || pert_15mu_low->ntrack <= 0 || pert_15mu_high->ntrack <= 0)
+    ERRMSG("Could not read any tracks!");
+
   /* ------------------------------------------------------------
      Calculate perturbations and variances...
      ------------------------------------------------------------ */
