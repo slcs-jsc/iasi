@@ -72,25 +72,33 @@ $(function() {
   <div class="headertitle"><div class="title">IASI Code Collection </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p >The IASI Code Collection enables data processing and analysis for remote sensing observations captured by Eumetsat's Infrared Atmospheric Sounding Interferometer (IASI).</p>
-<h1><a class="anchor" id="Introduction"></a>
-Introduction</h1>
-<p >The source code of the IASI Code Collection is available from the <a href="https://github.com/slcs-jsc/iasi">git repository</a>. Please see the <a href="https://github.com/slcs-jsc/iasi/blob/master/README.md">README.md</a> in the git repository for introductory information. More information can be found in the <a href="https://slcs-jsc.github.io/iasi">user manual</a>.</p>
-<p >This doxygen manual contains information about the algorithms and data structures used in the code. Please refer to the &lsquo;<a class="el" href="libiasi_8h.html" title="IASI Code Collection library declarations.">libiasi.h</a>&rsquo; documentation for a first overview.</p>
-<h1><a class="anchor" id="References"></a>
-References</h1>
-<p >For citing the model in scientific publications, please see <a href="https://github.com/slcs-jsc/iasi/blob/master/CITATION.cff">CITATION.cff</a>.</p>
-<h1><a class="anchor" id="License"></a>
-License</h1>
-<p >The IASI Code Collection is being develop at the Jülich Supercomputing Centre, Forschungszentrum Jülich, Germany.</p>
-<p >the IASI Code Collection is distributed under the terms of the <a href="https://github.com/slcs-jsc/iasi/blob/master/COPYING">GNU General Public License v3.0</a>.</p>
-<h1><a class="anchor" id="Contributing"></a>
-Contributing</h1>
-<p >We are interested in supporting operational and research applications with the IASI Code Collection.</p>
-<p >You can submit bug reports or feature requests on the <a href="https://github.com/slcs-jsc/iasi/issues">issue tracker</a>.</p>
-<p >Proposed code changes and fixes can be submitted as <a href="https://github.com/slcs-jsc/iasi/pulls">pull requests</a>.</p>
-<p >Please do not hesitate to contact us if you have any questions or need assistance.</p>
-<h1><a class="anchor" id="Contact"></a>
+<div class="textblock"><p >The IASI Code Collection provides command-line tools and shared C library components for processing observations from Eumetsat's Infrared Atmospheric Sounding Interferometer (IASI).</p>
+<h1><a class="anchor" id="overview"></a>
+Overview</h1>
+<p >The source tree combines standalone executables in <code>src/</code> with shared helper routines in <code><a class="el" href="libiasi_8c.html" title="IASI Code Collection library definitions.">libiasi.c</a></code> and <code><a class="el" href="libiasi_8h.html" title="IASI Code Collection library declarations.">libiasi.h</a></code>. Typical workflows include reading IASI Level-1C granules, extracting spectra, computing perturbation products, generating geolocated map tables, estimating noise, and preparing retrieval inputs.</p>
+<p >This Doxygen manual focuses on the internal data structures and helper routines used by those programs. Please refer to the <code><a class="el" href="libiasi_8h.html" title="IASI Code Collection library declarations.">libiasi.h</a></code> documentation for a first overview.</p>
+<h1><a class="anchor" id="build"></a>
+Build and runtime</h1>
+<p >The code is built from <code>src/</code> with <code>make</code>. Runtime workflows typically depend on GSL, netCDF, CODA, OpenMP, and MPI for the retrieval executable. If these libraries are not installed system-wide, local source archives and a build helper are provided under <code>libs/</code>.</p>
+<p >At runtime, CODA definitions are expected under <code>data/</code>, and local library builds may require <code>LD_LIBRARY_PATH</code> to include <code>libs/build/lib/</code>.</p>
+<h1><a class="anchor" id="provenance"></a>
+Provenance</h1>
+<p >The files <code>jurassic.c</code>, <code>jurassic.h</code>, and several small time-conversion utilities in <code>src/</code> are copied into this repository for convenience from the external JURASSIC radiative transfer model:</p>
+<ul>
+<li><a href="https://github.com/slcs-jsc/jurassic">https://github.com/slcs-jsc/jurassic</a></li>
+</ul>
+<h1><a class="anchor" id="links"></a>
+Project links</h1>
+<ul>
+<li>Source repository: <a href="https://github.com/slcs-jsc/iasi">https://github.com/slcs-jsc/iasi</a></li>
+<li>README: <a href="https://github.com/slcs-jsc/iasi/blob/master/README.md">https://github.com/slcs-jsc/iasi/blob/master/README.md</a></li>
+<li>MkDocs manual: <a href="https://slcs-jsc.github.io/iasi">https://slcs-jsc.github.io/iasi</a></li>
+<li>Citation metadata: <a href="https://github.com/slcs-jsc/iasi/blob/master/CITATION.cff">https://github.com/slcs-jsc/iasi/blob/master/CITATION.cff</a></li>
+<li>License text: <a href="https://github.com/slcs-jsc/iasi/blob/master/COPYING">https://github.com/slcs-jsc/iasi/blob/master/COPYING</a></li>
+<li>Issue tracker: <a href="https://github.com/slcs-jsc/iasi/issues">https://github.com/slcs-jsc/iasi/issues</a></li>
+<li>Pull requests: <a href="https://github.com/slcs-jsc/iasi/pulls">https://github.com/slcs-jsc/iasi/pulls</a></li>
+</ul>
+<h1><a class="anchor" id="contact"></a>
 Contact</h1>
 <p >Dr. Lars Hoffmann</p>
 <p >Jülich Supercomputing Centre, Forschungszentrum Jülich</p>
