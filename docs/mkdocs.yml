@@ -3,7 +3,13 @@ site_url: https://slcs-jsc.github.io/iasi/
 repo_url: https://github.com/slcs-jsc/iasi
 docs_dir: manual
 theme: material
+markdown_extensions:
+  - admonition
+  - tables
 
 nav:
     - Home: index.md
+    - Getting Started: getting-started.md
+    - Tools: tools.md
+    - Example Workflow: workflow.md
     - Links: links.md

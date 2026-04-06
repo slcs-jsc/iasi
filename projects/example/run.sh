@@ -11,10 +11,10 @@ f=../../tests/data/IASI_xxx_1C_M02_20080101001156Z_20080101015356Z_N_O_200801010
 [ -s "$f" ] || { echo "Download failed!"; exit 1; }
 
 # Get spectra...
-$iasi/spec2tab $f i 0 30 spec.tab
+$iasi/spec2tab - $f i 0 30 spec.tab
 
 # Get perturbations...
-$iasi/perturbation pert.nc $f
+$iasi/perturbation - pert.nc $f
 
 # Get maps...
 $iasi/map_pert - pert.nc map_4mu.tab PERTNAME 4mu
