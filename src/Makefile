@@ -90,6 +90,9 @@ jurassic.o: jurassic.c jurassic.h Makefile
 retrieval: retrieval.c jurassic.o
 	$(MPICC) $(CFLAGS) -o retrieval retrieval.c jurassic.o $(LDFLAGS_RET)
 
+check: all
+	@printf '%s\n' 'No automated checks defined yet.'
+
 clean:
 	rm -rf $(EXC) retrieval *.o *.gcda *.gcno *.gcov coverage* *~
 
