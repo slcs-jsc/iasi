@@ -16,5 +16,6 @@ var searchData=
   ['ret_5fp_13',['ret_p',['../structncd__t.html#a537e6154d4cbd3151a810e4f813e2572',1,'ncd_t']]],
   ['ret_5ft_14',['ret_t',['../structncd__t.html#a77e865da6d72c0afc6399ee3dddd3e85',1,'ncd_t']]],
   ['ret_5fz_15',['ret_z',['../structncd__t.html#a0bd348ec517497e7b9655fe7424370eb',1,'ncd_t']]],
-  ['retrieval_2ec_16',['retrieval.c',['../retrieval_8c.html',1,'']]]
+  ['retrieval_2ec_16',['retrieval.c',['../retrieval_8c.html',1,'']]],
+  ['runtime_17',['Build and runtime',['../index.html#build',1,'']]]
 ];

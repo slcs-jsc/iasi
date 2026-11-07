@@ -6,5 +6,6 @@ var searchData=
   ['bands_2ec_3',['bands.c',['../bands_8c.html',1,'']]],
   ['bg_4',['bg',['../structwave__t.html#acb5c9c5f8c013a2b945a6ec4147379d6',1,'wave_t']]],
   ['bt_5',['bt',['../structpert__t.html#ae75fcb123c0b4525aeb14870bc73a4f4',1,'pert_t']]],
-  ['buffer_5fnc_6',['buffer_nc',['../retrieval_8c.html#a90ad2e847c81fd85bd7952e17919933f',1,'retrieval.c']]]
+  ['buffer_5fnc_6',['buffer_nc',['../retrieval_8c.html#a90ad2e847c81fd85bd7952e17919933f',1,'retrieval.c']]],
+  ['build_20and_20runtime_7',['Build and runtime',['../index.html#build',1,'']]]
 ];

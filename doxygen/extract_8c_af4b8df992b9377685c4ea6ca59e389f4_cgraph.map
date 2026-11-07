@@ -1,8 +1,13 @@
 <map id="read_met" name="read_met">
-<area shape="rect" id="node1" title="Read meteorological data file." alt="" coords="5,107,81,133"/>
-<area shape="rect" id="node2" href="$extract_8c.html#a089d9c0099e3fc6944c2a48667362ca0" title="Extrapolate meteorological data at lower boundary." alt="" coords="129,5,276,32"/>
-<area shape="rect" id="node3" href="$extract_8c.html#aecc323fc59836bc303619b4cc48cdd31" title="Calculate geopotential heights." alt="" coords="141,56,264,83"/>
-<area shape="rect" id="node4" href="$extract_8c.html#ab4bf3e7235a161e9845cb0cf68aedc5c" title="Read and convert variable from meteorological data file." alt="" coords="149,107,256,133"/>
-<area shape="rect" id="node5" href="$extract_8c.html#a38f91765df8eb0a66fb3a6408dca0600" title="Create meteorological data with periodic boundary conditions." alt="" coords="139,157,267,184"/>
-<area shape="rect" id="node6" href="$extract_8c.html#a868644719fc7bbee6e8690a9253fb9db" title="Downsampling of meteorological data." alt="" coords="140,208,265,235"/>
+<area shape="rect" id="Node000001" title="Read meteorological data file." alt="" coords="5,104,81,130"/>
+<area shape="rect" id="Node000002" href="$extract_8c.html#a089d9c0099e3fc6944c2a48667362ca0" title="Extrapolate meteorological data at lower boundary." alt="" coords="129,5,274,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="54,102,86,71,127,40,136,35,138,40,130,44,89,75,58,105"/>
+<area shape="rect" id="Node000003" href="$extract_8c.html#aecc323fc59836bc303619b4cc48cdd31" title="Calculate geopotential heights." alt="" coords="141,55,262,80"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="80,103,142,83,144,88,82,108"/>
+<area shape="rect" id="Node000004" href="$extract_8c.html#ab4bf3e7235a161e9845cb0cf68aedc5c" title="Read and convert variable from meteorological data file." alt="" coords="148,104,254,130"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="81,114,133,114,133,120,81,120"/>
+<area shape="rect" id="Node000005" href="$extract_8c.html#a38f91765df8eb0a66fb3a6408dca0600" title="Create meteorological data with periodic boundary conditions." alt="" coords="138,153,265,179"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="82,126,144,146,142,151,80,131"/>
+<area shape="rect" id="Node000006" href="$extract_8c.html#a868644719fc7bbee6e8690a9253fb9db" title="Downsampling of meteorological data." alt="" coords="139,203,264,228"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="58,128,89,159,130,189,138,194,136,198,127,194,86,163,54,132"/>
 </map>

@@ -1,6 +1,9 @@
 <map id="intpol_met_time" name="intpol_met_time">
-<area shape="rect" id="node1" title="Temporal interpolation of meteorological data." alt="" coords="5,31,120,57"/>
-<area shape="rect" id="node2" href="$extract_8c.html#a3e0460e2993e48d1c757498b7c411ead" title="Spatial interpolation of meteorological data." alt="" coords="168,31,292,57"/>
-<area shape="rect" id="node3" href="$extract_8c.html#a4fd1c0e3879666ffd341ca17afe0f706" title="Linear interpolation of 2&#45;D meteorological data." alt="" coords="340,5,443,32"/>
-<area shape="rect" id="node4" href="$extract_8c.html#a6f092fadf1adc9dc38f37eb0cb572703" title="Linear interpolation of 3&#45;D meteorological data." alt="" coords="340,56,443,83"/>
+<area shape="rect" id="Node000001" title="Temporal interpolation of meteorological data." alt="" coords="5,31,119,56"/>
+<area shape="rect" id="Node000002" href="$extract_8c.html#a3e0460e2993e48d1c757498b7c411ead" title="Spatial interpolation of meteorological data." alt="" coords="167,31,290,56"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="119,41,151,41,151,46,119,46"/>
+<area shape="rect" id="Node000003" href="$extract_8c.html#a4fd1c0e3879666ffd341ca17afe0f706" title="Linear interpolation of 2&#45;D meteorological data." alt="" coords="338,5,440,31"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="290,31,322,26,323,31,291,36"/>
+<area shape="rect" id="Node000004" href="$extract_8c.html#a6f092fadf1adc9dc38f37eb0cb572703" title="Linear interpolation of 3&#45;D meteorological data." alt="" coords="338,55,440,80"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="291,50,323,55,323,60,290,55"/>
 </map>
